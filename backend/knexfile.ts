@@ -2,9 +2,11 @@ const config = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'scheduler',
-      user: 'postgres',
+      database: process.env.DB_NAME || 'scheduler',
+      user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD?.toString() || '1234',
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5432,
     },
     pool: {
       min: 2,
@@ -19,9 +21,11 @@ const config = {
   staging: {
     client: 'postgresql',
     connection: {
-      database: 'scheduler',
-      user: 'postgres',
+      database: process.env.DB_NAME || 'scheduler',
+      user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD?.toString() || '1234',
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5432,
     },
     pool: {
       min: 2,
@@ -34,10 +38,12 @@ const config = {
 
   production: {
     client: 'postgresql',
-    connection: {
-      database: 'scheduler',
-      user: 'postgres',
+    connection: process.env.DATABASE_URL || {
+      database: process.env.DB_NAME || 'scheduler',
+      user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD?.toString() || '1234',
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5432,
     },
     pool: {
       min: 2,
