@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001'; // Change to your backend URL if deployed
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export interface Slot {
   id: number;
@@ -19,7 +20,6 @@ export interface WeekSlotsResponse {
   calendar: DailySlots[];
 }
 
-// Fetch slots for a given week (date string in YYYY-MM-DD)
 export async function fetchWeekSlots(weekDate: string): Promise<WeekSlotsResponse> {
   const url = `${API_BASE_URL}/slots?week=${weekDate}`;
   console.log('Fetching slots from:', url);
@@ -32,7 +32,6 @@ export async function fetchWeekSlots(weekDate: string): Promise<WeekSlotsRespons
 }
 
 
-// Create a new recurring slot
 export async function createSlot(day_of_week: number, start_time: string, end_time: string) {
   const res = await fetch(`${API_BASE_URL}/slots`, {
     method: 'POST',
@@ -43,7 +42,6 @@ export async function createSlot(day_of_week: number, start_time: string, end_ti
   return res.json();
 }
 
-// Update a slot exception
 export async function updateSlotException(id: number, date: string, new_start_time: string, new_end_time: string) {
   const res = await fetch(`${API_BASE_URL}/slots/${id}`, {
     method: 'PATCH',
@@ -54,7 +52,6 @@ export async function updateSlotException(id: number, date: string, new_start_ti
   return res.json();
 }
 
-// Delete a slot exception
 export async function deleteSlotException(slot_id: number, date: string) {
   const res = await fetch(`${API_BASE_URL}/slots/${slot_id}?date=${date}`, {
     method: 'DELETE',
