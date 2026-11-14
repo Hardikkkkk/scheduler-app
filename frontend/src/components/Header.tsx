@@ -66,7 +66,7 @@ export default function Header({
               width: '40px',
               height: '40px',
               borderRadius: '12px',
-              background: `linear-gradient(135deg, var(--ink-primary) 0%, var(--ink-secondary) 100%)`,
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
