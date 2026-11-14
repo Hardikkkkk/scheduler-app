@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createSlot } from '../api/slots';
 
 interface AiCommandBarProps {
@@ -25,7 +26,6 @@ const DAY_MAP: { [key: string]: number } = {
   sat: 6,
 };
 
-// Parse standard natural language times (e.g. "10am", "2:30pm", "14:00")
 const parseTimeString = (timeStr: string): string | null => {
   const clean = timeStr.trim().toLowerCase();
   const match = clean.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
@@ -52,7 +52,6 @@ export default function AiCommandBar({ onSuccess }: AiCommandBarProps) {
     setMessage(null);
 
     try {
-      // Find days mentioned in prompt
       const targetDays: number[] = [];
       Object.keys(DAY_MAP).forEach((dayKeyword) => {
         const regex = new RegExp(`\\b${dayKeyword}\\b`, 'i');
@@ -64,12 +63,11 @@ export default function AiCommandBar({ onSuccess }: AiCommandBarProps) {
         }
       });
 
-      // Find time ranges: e.g. "10am to 12pm", "2pm - 4pm", "from 14:00 to 16:00"
       const timeRegex = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:to|-|until)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i;
       const match = text.match(timeRegex);
 
       if (!match) {
-        throw new Error('Could not detect time range. Try e.g.: "Free Tuesdays from 2pm to 4pm"');
+        throw new Error('Could not detect time range. Try: "Free Tuesdays from 2pm to 4pm"');
       }
 
       const startTime = parseTimeString(match[1]);
@@ -79,7 +77,6 @@ export default function AiCommandBar({ onSuccess }: AiCommandBarProps) {
         throw new Error('Invalid time format. Please use e.g. "10am to 12pm" or "14:00 to 16:00"');
       }
 
-      // Default to today if no specific day mentioned
       const daysToSchedule = targetDays.length > 0 ? targetDays : [new Date().getDay()];
 
       let createdCount = 0;
@@ -111,32 +108,40 @@ export default function AiCommandBar({ onSuccess }: AiCommandBarProps) {
   ];
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="glass-panel"
       style={{
-        backgroundColor: '#f8fafc',
-        borderRadius: '16px',
-        padding: '20px',
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)',
+        padding: '24px',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '18px' }}>✨</span>
-        <span style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>
-          AI Natural Language Scheduling
-        </span>
-        <span
-          style={{
-            fontSize: '10px',
-            fontWeight: '800',
-            backgroundColor: '#fae8ff',
-            color: '#a21caf',
-            padding: '2px 8px',
-            borderRadius: '12px',
-            textTransform: 'uppercase',
-          }}
-        >
-          Beta
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '20px' }}>✨</span>
+          <span style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>
+            AI Natural Language Scheduling
+          </span>
+          <span
+            style={{
+              fontSize: '10px',
+              fontWeight: '800',
+              background: 'linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%)',
+              color: 'white',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            GPT-Powered
+          </span>
+        </div>
+        <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
+          Press Enter to apply rules
         </span>
       </div>
 
@@ -147,81 +152,113 @@ export default function AiCommandBar({ onSuccess }: AiCommandBarProps) {
         }}
         style={{ display: 'flex', gap: '10px' }}
       >
-        <input
-          type="text"
-          placeholder='e.g. "Free every Tue and Thu from 2pm to 4pm" or "Open Fridays 10am to 12pm"'
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '12px 16px',
-            borderRadius: '12px',
-            border: '1px solid #cbd5e1',
-            fontSize: '14px',
-            backgroundColor: 'white',
-            outline: 'none',
-          }}
-        />
-        <button
+        <div style={{ position: 'relative', flex: 1 }}>
+          <input
+            type="text"
+            placeholder='e.g. "Free every Tue and Thu from 2pm to 4pm" or "Open Fridays 10am to 12pm"'
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 18px',
+              borderRadius: '14px',
+              border: '1px solid rgba(203, 213, 225, 0.8)',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              fontSize: '14px',
+              fontWeight: '500',
+              outline: 'none',
+              boxSizing: 'border-box',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#6366f1';
+              e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.15)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'rgba(203, 213, 225, 0.8)';
+              e.target.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,0.02)';
+            }}
+          />
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={loading || !prompt.trim()}
+          className="gradient-btn"
           style={{
-            backgroundColor: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            fontWeight: '600',
+            padding: '12px 24px',
+            borderRadius: '14px',
+            fontWeight: '700',
             fontSize: '14px',
             cursor: loading || !prompt.trim() ? 'not-allowed' : 'pointer',
-            boxShadow: '0 2px 6px rgba(79, 70, 229, 0.25)',
+            opacity: loading || !prompt.trim() ? 0.6 : 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            whiteSpace: 'nowrap',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
           }}
         >
-          {loading ? 'Scheduling...' : 'Apply ✨'}
-        </button>
+          <span>{loading ? '⏳' : '✨'}</span>
+          <span>{loading ? 'Parsing...' : 'Apply Rule'}</span>
+        </motion.button>
       </form>
 
-      {/* Suggested Quick Prompts */}
-      <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>Try asking:</span>
+      {/* Suggested Quick Prompt Pills */}
+      <div style={{ display: 'flex', gap: '8px', marginTop: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>Quick Suggestions:</span>
         {samplePrompts.map((sample) => (
-          <button
+          <motion.button
             key={sample}
+            whileHover={{ scale: 1.05, y: -1 }}
+            whileTap={{ scale: 0.95 }}
             type="button"
             onClick={() => handleParseAndExecute(sample)}
+            className="glass-pill"
             style={{
-              backgroundColor: 'white',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              padding: '4px 10px',
+              padding: '5px 12px',
               fontSize: '12px',
-              color: '#4338ca',
-              fontWeight: '500',
+              color: '#4f46e5',
+              fontWeight: '600',
               cursor: 'pointer',
+              border: '1px solid rgba(199, 210, 254, 0.6)',
+              backgroundColor: 'rgba(238, 242, 255, 0.7)',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
             "{sample}"
-          </button>
+          </motion.button>
         ))}
       </div>
 
-      {/* Feedback Message */}
-      {message && (
-        <div
-          style={{
-            marginTop: '12px',
-            padding: '10px 14px',
-            borderRadius: '10px',
-            fontSize: '13px',
-            fontWeight: '500',
-            backgroundColor: message.type === 'success' ? '#f0fdf4' : '#fef2f2',
-            color: message.type === 'success' ? '#15803d' : '#dc2626',
-            border: message.type === 'success' ? '1px solid #bbf7d0' : '1px solid #fecaca',
-          }}
-        >
-          {message.text}
-        </div>
-      )}
-    </div>
+      {/* Animated Feedback Notification */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              marginTop: '14px',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              fontSize: '13px',
+              fontWeight: '600',
+              backgroundColor: message.type === 'success' ? '#f0fdf4' : '#fef2f2',
+              color: message.type === 'success' ? '#166534' : '#b91c1c',
+              border: message.type === 'success' ? '1px solid #86efac' : '1px solid #fca5a5',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+            }}
+          >
+            {message.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

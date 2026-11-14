@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   fetchWeekSlots,
   createSlot,
@@ -12,6 +13,7 @@ import Header from './Header';
 import ClientBookingView from './ClientBookingView';
 import TimeGridView from './TimeGridView';
 import AiCommandBar from './AiCommandBar';
+import GlassBackground from './GlassBackground';
 
 const getFormattedToday = () => new Date().toISOString().slice(0, 10);
 
@@ -135,11 +137,10 @@ export default function Calendar() {
   }, 0);
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#f8fafc',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
+    <div style={{ minHeight: '100vh', position: 'relative' }}>
+      {/* Ambient React Bits Glass Background */}
+      <GlassBackground />
+
       {/* Top Header */}
       <Header
         currentView={currentView}
@@ -148,636 +149,727 @@ export default function Calendar() {
         onTimezoneChange={setTimezone}
       />
 
-      <main style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
-        padding: '32px 24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px'
-      }}>
-
-        {/* Client View Mode */}
-        {currentView === 'client' ? (
-          <ClientBookingView
-            calendar={calendar}
-            weekDate={weekDate}
-            onPrevWeek={prevWeek}
-            onNextWeek={nextWeek}
-            onBookingCreated={loadSlots}
-            loading={loading}
-          />
-        ) : (
-          /* Host Admin Mode */
-          <>
-            {/* Header & Scorecard Bar */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              backgroundColor: 'white',
-              padding: '24px',
-              borderRadius: '20px',
-              boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.04)',
-              border: '1px solid #e2e8f0',
-              flexWrap: 'wrap',
-              gap: '16px'
-            }}>
-              <div>
-                <h1 style={{
-                  fontSize: '24px',
-                  fontWeight: '800',
-                  color: '#0f172a',
-                  margin: '0',
-                  marginBottom: '4px'
-                }}>
-                  Host Dashboard
-                </h1>
-                <div style={{
-                  fontSize: '14px',
-                  color: '#64748b',
-                  fontWeight: '500'
-                }}>
-                  Weekly Schedule &bull; {currentMonth} ({timezone.split('/')[1]?.replace('_', ' ') || timezone})
-                </div>
-              </div>
-
-              {/* Scorecard KPIs */}
-              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <div style={{
-                  backgroundColor: '#f1f5f9',
-                  padding: '10px 16px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-                    Available Windows
-                  </span>
-                  <span style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a' }}>
-                    {totalSlotsCount} slots ({totalHours.toFixed(1)}h)
-                  </span>
-                </div>
-
-                <div style={{
-                  backgroundColor: '#f0fdf4',
-                  padding: '10px 16px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  border: '1px solid #bbf7d0'
-                }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#16a34a', textTransform: 'uppercase' }}>
-                    Bookings
-                  </span>
-                  <span style={{ fontSize: '17px', fontWeight: '800', color: '#15803d' }}>
-                    {totalBookingsCount} sessions
-                  </span>
-                </div>
-
-                {/* Display Mode: Grid vs List */}
-                <div style={{
-                  display: 'flex',
-                  backgroundColor: '#f1f5f9',
-                  padding: '4px',
-                  borderRadius: '12px',
-                  border: '1px solid #e2e8f0'
-                }}>
-                  <button
-                    onClick={() => setHostDisplayMode('grid')}
-                    style={{
-                      border: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      backgroundColor: hostDisplayMode === 'grid' ? 'white' : 'transparent',
-                      color: hostDisplayMode === 'grid' ? '#4f46e5' : '#64748b',
-                      boxShadow: hostDisplayMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                    }}
-                  >
-                    📅 Time-Grid
-                  </button>
-                  <button
-                    onClick={() => setHostDisplayMode('list')}
-                    style={{
-                      border: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      backgroundColor: hostDisplayMode === 'list' ? 'white' : 'transparent',
-                      color: hostDisplayMode === 'list' ? '#4f46e5' : '#64748b',
-                      boxShadow: hostDisplayMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                    }}
-                  >
-                    📋 List
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Command Bar Component */}
-            <AiCommandBar onSuccess={loadSlots} />
-
-            {/* Calendar Navigation Bar */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              padding: '16px 24px',
-              borderRadius: '16px',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
-              border: '1px solid #e2e8f0'
-            }}>
-              <button
-                onClick={prevWeek}
-                disabled={loading}
+      <main
+        style={{
+          maxWidth: '1240px',
+          margin: '0 auto',
+          padding: '36px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {currentView === 'client' ? (
+            <motion.div
+              key="client-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35 }}
+            >
+              <ClientBookingView
+                calendar={calendar}
+                weekDate={weekDate}
+                onPrevWeek={prevWeek}
+                onNextWeek={nextWeek}
+                onBookingCreated={loadSlots}
+                loading={loading}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="host-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+            >
+              {/* Glass Header & Scorecard Bar */}
+              <div
+                className="glass-panel"
                 style={{
-                  border: '1px solid #e2e8f0',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                  color: '#334155'
+                  padding: '28px 32px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '20px',
                 }}
               >
-                ‹ Previous Week
-              </button>
-
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>
-                  {calendar?.weekStart} &bull; {calendar?.weekEnd}
-                </span>
-              </div>
-
-              <button
-                onClick={nextWeek}
-                disabled={loading}
-                style={{
-                  border: '1px solid #e2e8f0',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                  color: '#334155'
-                }}
-              >
-                Next Week ›
-              </button>
-            </div>
-
-            {/* Loading */}
-            {loading && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}>
-                <div style={{
-                  width: '36px',
-                  height: '36px',
-                  border: '3px solid #e2e8f0',
-                  borderTopColor: '#4f46e5',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }}></div>
-              </div>
-            )}
-
-            {/* Error Banner with Retry */}
-            {error && (
-              <div style={{
-                padding: '16px 20px',
-                backgroundColor: '#fef2f2',
-                borderLeft: '4px solid #ef4444',
-                color: '#dc2626',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '16px',
-                flexWrap: 'wrap'
-              }}>
                 <div>
-                  <span>{error}</span>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#991b1b' }}>
-                    Note: If database is disconnected, update your connection string in Render.
-                  </p>
+                  <h1
+                    style={{
+                      fontSize: '26px',
+                      fontWeight: '800',
+                      color: '#0f172a',
+                      margin: '0 0 4px 0',
+                      letterSpacing: '-0.03em',
+                    }}
+                  >
+                    Host Dashboard
+                  </h1>
+                  <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '500' }}>
+                    Weekly Schedule &bull; {currentMonth} ({timezone.split('/')[1]?.replace('_', ' ') || timezone})
+                  </div>
                 </div>
-                <button
-                  onClick={loadSlots}
+
+                {/* Scorecard KPIs */}
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    className="glass-card"
+                    style={{
+                      padding: '12px 20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>
+                      Available Windows
+                    </span>
+                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
+                      {totalSlotsCount} slots ({totalHours.toFixed(1)}h)
+                    </span>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    className="glass-card"
+                    style={{
+                      padding: '12px 20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      border: '1px solid rgba(134, 239, 172, 0.7)',
+                    }}
+                  >
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>
+                      Client Bookings
+                    </span>
+                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#15803d' }}>
+                      {totalBookingsCount} sessions
+                    </span>
+                  </motion.div>
+
+                  {/* Display Mode Switcher */}
+                  <div
+                    className="glass-pill"
+                    style={{
+                      display: 'flex',
+                      padding: '4px',
+                      position: 'relative',
+                    }}
+                  >
+                    <button
+                      onClick={() => setHostDisplayMode('grid')}
+                      style={{
+                        position: 'relative',
+                        border: 'none',
+                        padding: '8px 14px',
+                        borderRadius: '10px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        color: hostDisplayMode === 'grid' ? '#4f46e5' : '#64748b',
+                        backgroundColor: 'transparent',
+                        zIndex: 2,
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}
+                    >
+                      {hostDisplayMode === 'grid' && (
+                        <motion.div
+                          layoutId="activeHostMode"
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundColor: 'white',
+                            borderRadius: '10px',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                            zIndex: -1,
+                          }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                        />
+                      )}
+                      📅 Time-Grid
+                    </button>
+                    <button
+                      onClick={() => setHostDisplayMode('list')}
+                      style={{
+                        position: 'relative',
+                        border: 'none',
+                        padding: '8px 14px',
+                        borderRadius: '10px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        color: hostDisplayMode === 'list' ? '#4f46e5' : '#64748b',
+                        backgroundColor: 'transparent',
+                        zIndex: 2,
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}
+                    >
+                      {hostDisplayMode === 'list' && (
+                        <motion.div
+                          layoutId="activeHostMode"
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundColor: 'white',
+                            borderRadius: '10px',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                            zIndex: -1,
+                          }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                        />
+                      )}
+                      📋 List View
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Command Bar */}
+              <AiCommandBar onSuccess={loadSlots} />
+
+              {/* Calendar Navigation */}
+              <div
+                className="glass-panel"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '16px 24px',
+                }}
+              >
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={prevWeek}
+                  disabled={loading}
+                  className="glass-pill"
                   style={{
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
+                    padding: '8px 18px',
+                    fontSize: '13px',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    fontWeight: '700',
+                    color: '#334155',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
                   }}
                 >
-                  Retry
-                </button>
+                  ‹ Previous Week
+                </motion.button>
+
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>
+                    {calendar?.weekStart} &bull; {calendar?.weekEnd}
+                  </span>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={nextWeek}
+                  disabled={loading}
+                  className="glass-pill"
+                  style={{
+                    padding: '8px 18px',
+                    fontSize: '13px',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    fontWeight: '700',
+                    color: '#334155',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  Next Week ›
+                </motion.button>
               </div>
-            )}
 
-            {/* Mode 1: Interactive Time-Grid View */}
-            {!loading && hostDisplayMode === 'grid' && (
-              <TimeGridView
-                calendar={calendar}
-                onAddSlotForDay={(dayOfWeek) => setAddingForDay(dayOfWeek)}
-                onEditSlot={(slot, date) => startEditSlot(slot.id, date, slot.start_time, slot.end_time)}
-                onDeleteSlot={deleteSlot}
-                onCancelBooking={handleCancelBooking}
-              />
-            )}
+              {/* Loading Spinner */}
+              {loading && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '36px 0' }}>
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      border: '3px solid rgba(226, 232, 240, 0.6)',
+                      borderTopColor: '#4f46e5',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite',
+                    }}
+                  />
+                </div>
+              )}
 
-            {/* Mode 2: Card List View */}
-            {!loading && hostDisplayMode === 'list' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {days.map((day) => {
-                  const dayOfWeek = new Date(day.date).getUTCDay();
-                  const isToday = day.date === getFormattedToday();
-                  const dayName = dayNames[dayOfWeek];
-                  const dayDate = new Date(day.date);
-                  
-                  return (
-                    <div key={day.date} style={{
-                      backgroundColor: 'white',
-                      borderRadius: '16px',
-                      padding: '20px',
-                      border: '1px solid #e2e8f0',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        marginBottom: '16px',
-                        paddingBottom: '12px',
-                        borderBottom: '1px solid #f1f5f9'
-                      }}>
-                        <div style={{
-                          fontSize: '16px',
-                          fontWeight: '700',
-                          color: isToday ? '#4f46e5' : '#0f172a',
-                          minWidth: '120px'
-                        }}>
-                          {dayName}, {String(dayDate.getUTCDate()).padStart(2, '0')}
-                        </div>
-                        {isToday && (
-                          <div style={{
-                            fontSize: '12px',
-                            fontWeight: '700',
-                            color: '#4f46e5',
-                            backgroundColor: '#eef2ff',
-                            padding: '3px 8px',
-                            borderRadius: '6px'
-                          }}>
-                            Today
-                          </div>
-                        )}
-                        <span style={{ fontSize: '13px', color: '#64748b', marginLeft: 'auto' }}>
-                          {day.slots.length} recurring slots &bull; {day.bookings?.length || 0} booked
-                        </span>
-                      </div>
+              {/* Error Banner with Retry */}
+              {error && (
+                <div
+                  className="glass-panel"
+                  style={{
+                    padding: '18px 24px',
+                    backgroundColor: 'rgba(254, 242, 242, 0.85)',
+                    borderLeft: '4px solid #ef4444',
+                    color: '#b91c1c',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '16px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <div>
+                    <span style={{ fontWeight: '700' }}>{error}</span>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#991b1b' }}>
+                      Note: If database is disconnected, update your connection string in Render.
+                    </p>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={loadSlots}
+                    style={{
+                      backgroundColor: '#ef4444',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 18px',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      fontWeight: '700',
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}
+                  >
+                    Retry
+                  </motion.button>
+                </div>
+              )}
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {day.slots.length === 0 && addingForDay !== dayOfWeek && (
-                          <div style={{
+              {/* Interactive Time-Grid View */}
+              {!loading && hostDisplayMode === 'grid' && (
+                <TimeGridView
+                  calendar={calendar}
+                  onAddSlotForDay={(dayOfWeek) => setAddingForDay(dayOfWeek)}
+                  onEditSlot={(slot, date) => startEditSlot(slot.id, date, slot.start_time, slot.end_time)}
+                  onDeleteSlot={deleteSlot}
+                  onCancelBooking={handleCancelBooking}
+                />
+              )}
+
+              {/* Card List View */}
+              {!loading && hostDisplayMode === 'list' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {days.map((day) => {
+                    const dayOfWeek = new Date(day.date).getUTCDay();
+                    const isToday = day.date === getFormattedToday();
+                    const dayName = dayNames[dayOfWeek];
+                    const dayDate = new Date(day.date);
+
+                    return (
+                      <motion.div
+                        key={day.date}
+                        className="glass-panel"
+                        style={{ padding: '24px' }}
+                      >
+                        <div
+                          style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '12px',
-                            backgroundColor: '#f8fafc',
-                            padding: '16px 20px',
-                            borderRadius: '12px',
-                            border: '1px dashed #cbd5e1'
-                          }}>
-                            <div style={{ fontSize: '14px', color: '#94a3b8' }}>
-                              No availability slots set for this day
-                            </div>
-                            <button
-                              onClick={() => setAddingForDay(dayOfWeek)}
-                              style={{
-                                marginLeft: 'auto',
-                                backgroundColor: '#4f46e5',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                padding: '6px 14px',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              + Add Slot
-                            </button>
-                          </div>
-                        )}
-
-                        {day.slots.map((slot) => (
-                          <div key={slot.id}>
-                            {editingSlot &&
-                            editingSlot.id === slot.id &&
-                            editingSlot.date === day.date ? (
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                backgroundColor: '#fefce8',
-                                padding: '16px 20px',
-                                borderRadius: '12px',
-                                border: '1px solid #eab308'
-                              }}>
-                                <div style={{ display: 'flex', gap: '8px', flex: 1, alignItems: 'center' }}>
-                                  <input
-                                    type="time"
-                                    value={editStartTime}
-                                    onChange={(e) => setEditStartTime(e.target.value)}
-                                    style={{
-                                      border: '1px solid #d1d5db',
-                                      padding: '8px 12px',
-                                      borderRadius: '8px',
-                                      fontSize: '14px',
-                                      outline: 'none',
-                                      backgroundColor: 'white'
-                                    }}
-                                  />
-                                  <span style={{ color: '#64748b' }}>to</span>
-                                  <input
-                                    type="time"
-                                    value={editEndTime}
-                                    onChange={(e) => setEditEndTime(e.target.value)}
-                                    style={{
-                                      border: '1px solid #d1d5db',
-                                      padding: '8px 12px',
-                                      borderRadius: '8px',
-                                      fontSize: '14px',
-                                      outline: 'none',
-                                      backgroundColor: 'white'
-                                    }}
-                                  />
-                                </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                  <button
-                                    onClick={saveEdit}
-                                    style={{
-                                      background: '#22c55e',
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '8px',
-                                      padding: '8px 16px',
-                                      fontSize: '13px',
-                                      fontWeight: '600',
-                                      cursor: 'pointer'
-                                    }}
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    onClick={cancelEdit}
-                                    style={{
-                                      background: '#6b7280',
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '8px',
-                                      padding: '8px 16px',
-                                      fontSize: '13px',
-                                      fontWeight: '600',
-                                      cursor: 'pointer'
-                                    }}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                backgroundColor: slot.exception ? '#fefce8' : '#f8fafc',
-                                padding: '16px 20px',
-                                borderRadius: '12px',
-                                border: slot.exception ? '1px solid #fde047' : '1px solid #e2e8f0'
-                              }}>
-                                <span style={{ fontSize: '18px' }}>⏰</span>
-                                <div>
-                                  <span style={{
-                                    fontSize: '15px',
-                                    color: '#0f172a',
-                                    fontWeight: '700'
-                                  }}>
-                                    {slot.start_time.slice(0, 5)} – {slot.end_time.slice(0, 5)}
-                                  </span>
-                                  {slot.exception && (
-                                    <span style={{
-                                      marginLeft: '10px',
-                                      fontSize: '11px',
-                                      fontWeight: '700',
-                                      color: '#854d0e',
-                                      backgroundColor: '#fef08a',
-                                      padding: '2px 8px',
-                                      borderRadius: '10px'
-                                    }}>
-                                      Exception for {day.date}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                <div style={{ 
-                                  marginLeft: 'auto',
-                                  display: 'flex',
-                                  gap: '8px'
-                                }}>
-                                  <button
-                                    onClick={() =>
-                                      startEditSlot(
-                                        slot.id,
-                                        day.date,
-                                        slot.start_time,
-                                        slot.end_time
-                                      )
-                                    }
-                                    style={{
-                                      background: 'white',
-                                      border: '1px solid #e2e8f0',
-                                      borderRadius: '8px',
-                                      padding: '6px 10px',
-                                      cursor: 'pointer',
-                                      fontSize: '13px',
-                                      color: '#475569'
-                                    }}
-                                  >
-                                    ✏️ Edit
-                                  </button>
-                                  <button
-                                    onClick={() => deleteSlot(slot.id, day.date)}
-                                    style={{
-                                      background: 'white',
-                                      border: '1px solid #fee2e2',
-                                      borderRadius: '8px',
-                                      padding: '6px 10px',
-                                      cursor: 'pointer',
-                                      fontSize: '13px',
-                                      color: '#dc2626'
-                                    }}
-                                  >
-                                    🗑️ Delete
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-
-                        {/* Confirmed Bookings Section */}
-                        {day.bookings && day.bookings.length > 0 && (
-                          <div style={{ marginTop: '8px' }}>
-                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#166534', textTransform: 'uppercase' }}>
-                              Client Appointments
-                            </span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
-                              {day.bookings.map((b) => (
-                                <div
-                                  key={b.id}
-                                  style={{
-                                    backgroundColor: '#f0fdf4',
-                                    border: '1px solid #bbf7d0',
-                                    padding: '12px 16px',
-                                    borderRadius: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    gap: '12px'
-                                  }}
-                                >
-                                  <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#166534' }}>
-                                        {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
-                                      </span>
-                                      <span style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a' }}>
-                                        {b.client_name}
-                                      </span>
-                                      <span style={{ fontSize: '12px', color: '#64748b' }}>
-                                        ({b.client_email})
-                                      </span>
-                                    </div>
-                                    <div style={{ fontSize: '12px', color: '#15803d', marginTop: '2px' }}>
-                                      📌 {b.meeting_title} {b.notes ? `• "${b.notes}"` : ''}
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={() => handleCancelBooking(b.id)}
-                                    style={{
-                                      background: 'white',
-                                      border: '1px solid #fca5a5',
-                                      color: '#dc2626',
-                                      padding: '4px 10px',
-                                      borderRadius: '6px',
-                                      fontSize: '12px',
-                                      fontWeight: '600',
-                                      cursor: 'pointer'
-                                    }}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Add Slot Modal / Inline Form */}
-                        {addingForDay === dayOfWeek && (
-                          <div style={{
-                            backgroundColor: '#f0fdf4',
-                            padding: '20px 24px',
-                            borderRadius: '12px',
-                            border: '1px solid #16a34a',
-                            marginTop: '8px'
-                          }}>
-                            <SlotForm
-                              dayOfWeek={dayOfWeek}
-                              onSubmit={onCreateSlot}
-                              onCancel={() => setAddingForDay(null)}
-                            />
-                          </div>
-                        )}
-
-                        {/* Add button for existing slots (< 2 per day) */}
-                        {day.slots.length > 0 && day.slots.length < 2 && addingForDay !== dayOfWeek && (
-                          <button
-                            onClick={() => setAddingForDay(dayOfWeek)}
+                            marginBottom: '16px',
+                            paddingBottom: '12px',
+                            borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
+                          }}
+                        >
+                          <div
                             style={{
-                              alignSelf: 'flex-start',
-                              backgroundColor: 'white',
-                              border: '1px dashed #cbd5e1',
-                              borderRadius: '8px',
-                              padding: '8px 14px',
-                              fontSize: '13px',
-                              fontWeight: '600',
-                              color: '#4f46e5',
-                              cursor: 'pointer',
-                              marginTop: '4px'
+                              fontSize: '17px',
+                              fontWeight: '800',
+                              color: isToday ? '#4f46e5' : '#0f172a',
+                              minWidth: '120px',
                             }}
                           >
-                            + Add 2nd Slot for {dayName}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                            {dayName}, {String(dayDate.getUTCDate()).padStart(2, '0')}
+                          </div>
+                          {isToday && (
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                fontWeight: '800',
+                                color: '#4f46e5',
+                                backgroundColor: 'rgba(238, 242, 255, 0.8)',
+                                padding: '3px 8px',
+                                borderRadius: '8px',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              Today
+                            </span>
+                          )}
+                          <span style={{ fontSize: '13px', color: '#64748b', marginLeft: 'auto', fontWeight: '500' }}>
+                            {day.slots.length} recurring slots &bull; {day.bookings?.length || 0} booked
+                          </span>
+                        </div>
 
-            {/* Modal Slot Form for Time-Grid */}
-            {hostDisplayMode === 'grid' && addingForDay !== null && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(15, 23, 42, 0.4)',
-                  backdropFilter: 'blur(4px)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 100,
-                  padding: '16px'
-                }}
-              >
-                <div style={{
-                  backgroundColor: 'white',
-                  borderRadius: '18px',
-                  padding: '24px',
-                  maxWidth: '480px',
-                  width: '100%',
-                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
-                }}>
-                  <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>
-                    Add Availability Window for {dayNames[addingForDay]}
-                  </h3>
-                  <SlotForm
-                    dayOfWeek={addingForDay}
-                    onSubmit={onCreateSlot}
-                    onCancel={() => setAddingForDay(null)}
-                  />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {day.slots.length === 0 && addingForDay !== dayOfWeek && (
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                backgroundColor: 'rgba(248, 250, 252, 0.6)',
+                                padding: '16px 20px',
+                                borderRadius: '14px',
+                                border: '1px dashed #cbd5e1',
+                              }}
+                            >
+                              <div style={{ fontSize: '14px', color: '#94a3b8', fontWeight: '500' }}>
+                                No availability slots set for this day
+                              </div>
+                              <motion.button
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={() => setAddingForDay(dayOfWeek)}
+                                className="gradient-btn"
+                                style={{
+                                  marginLeft: 'auto',
+                                  padding: '8px 16px',
+                                  borderRadius: '10px',
+                                  fontSize: '13px',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                }}
+                              >
+                                + Add Slot
+                              </motion.button>
+                            </div>
+                          )}
+
+                          {day.slots.map((slot) => (
+                            <div key={slot.id}>
+                              {editingSlot &&
+                              editingSlot.id === slot.id &&
+                              editingSlot.date === day.date ? (
+                                <div
+                                  className="glass-card"
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    backgroundColor: 'rgba(254, 252, 232, 0.9)',
+                                    padding: '16px 20px',
+                                    border: '1px solid #eab308',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', gap: '8px', flex: 1, alignItems: 'center' }}>
+                                    <input
+                                      type="time"
+                                      value={editStartTime}
+                                      onChange={(e) => setEditStartTime(e.target.value)}
+                                      style={{
+                                        border: '1px solid #d1d5db',
+                                        padding: '8px 12px',
+                                        borderRadius: '10px',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        backgroundColor: 'white',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    />
+                                    <span style={{ color: '#64748b' }}>to</span>
+                                    <input
+                                      type="time"
+                                      value={editEndTime}
+                                      onChange={(e) => setEditEndTime(e.target.value)}
+                                      style={{
+                                        border: '1px solid #d1d5db',
+                                        padding: '8px 12px',
+                                        borderRadius: '10px',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        backgroundColor: 'white',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                      onClick={saveEdit}
+                                      style={{
+                                        background: '#22c55e',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        padding: '8px 16px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={cancelEdit}
+                                      style={{
+                                        background: '#6b7280',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        padding: '8px 16px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className="glass-card"
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '16px 20px',
+                                    backgroundColor: slot.exception
+                                      ? 'rgba(254, 252, 232, 0.9)'
+                                      : 'rgba(255, 255, 255, 0.85)',
+                                    border: slot.exception ? '1px solid #fde047' : '1px solid rgba(226, 232, 240, 0.8)',
+                                  }}
+                                >
+                                  <span style={{ fontSize: '18px' }}>⏰</span>
+                                  <div>
+                                    <span
+                                      style={{
+                                        fontSize: '15px',
+                                        color: '#0f172a',
+                                        fontWeight: '800',
+                                      }}
+                                    >
+                                      {slot.start_time.slice(0, 5)} – {slot.end_time.slice(0, 5)}
+                                    </span>
+                                    {slot.exception && (
+                                      <span
+                                        style={{
+                                          marginLeft: '10px',
+                                          fontSize: '11px',
+                                          fontWeight: '800',
+                                          color: '#854d0e',
+                                          backgroundColor: '#fef08a',
+                                          padding: '2px 8px',
+                                          borderRadius: '10px',
+                                        }}
+                                      >
+                                        Exception for {day.date}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                                    <motion.button
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() =>
+                                        startEditSlot(
+                                          slot.id,
+                                          day.date,
+                                          slot.start_time,
+                                          slot.end_time
+                                        )
+                                      }
+                                      className="glass-pill"
+                                      style={{
+                                        padding: '6px 12px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        color: '#475569',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    >
+                                      ✏️ Edit
+                                    </motion.button>
+                                    <motion.button
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() => deleteSlot(slot.id, day.date)}
+                                      className="glass-pill"
+                                      style={{
+                                        padding: '6px 12px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        color: '#dc2626',
+                                        border: '1px solid #fee2e2',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    >
+                                      🗑️ Delete
+                                    </motion.button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+
+                          {/* Confirmed Bookings Section */}
+                          {day.bookings && day.bookings.length > 0 && (
+                            <div style={{ marginTop: '8px' }}>
+                              <span style={{ fontSize: '11px', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>
+                                Confirmed Appointments
+                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                                {day.bookings.map((b) => (
+                                  <div
+                                    key={b.id}
+                                    style={{
+                                      backgroundColor: 'rgba(240, 253, 244, 0.85)',
+                                      border: '1px solid #bbf7d0',
+                                      padding: '12px 18px',
+                                      borderRadius: '12px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'space-between',
+                                      gap: '12px',
+                                    }}
+                                  >
+                                    <div>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#166534' }}>
+                                          {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
+                                        </span>
+                                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>
+                                          {b.client_name}
+                                        </span>
+                                        <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                          ({b.client_email})
+                                        </span>
+                                      </div>
+                                      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '2px', fontWeight: '500' }}>
+                                        📌 {b.meeting_title} {b.notes ? `• "${b.notes}"` : ''}
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => handleCancelBooking(b.id)}
+                                      style={{
+                                        background: 'white',
+                                        border: '1px solid #fca5a5',
+                                        color: '#dc2626',
+                                        padding: '4px 10px',
+                                        borderRadius: '8px',
+                                        fontSize: '12px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Add Slot Form */}
+                          {addingForDay === dayOfWeek && (
+                            <div
+                              style={{
+                                backgroundColor: 'rgba(240, 253, 244, 0.9)',
+                                padding: '20px 24px',
+                                borderRadius: '14px',
+                                border: '1px solid #16a34a',
+                                marginTop: '8px',
+                              }}
+                            >
+                              <SlotForm
+                                dayOfWeek={dayOfWeek}
+                                onSubmit={onCreateSlot}
+                                onCancel={() => setAddingForDay(null)}
+                              />
+                            </div>
+                          )}
+
+                          {/* Add button for existing slots (< 2 per day) */}
+                          {day.slots.length > 0 && day.slots.length < 2 && addingForDay !== dayOfWeek && (
+                            <button
+                              onClick={() => setAddingForDay(dayOfWeek)}
+                              className="glass-pill"
+                              style={{
+                                alignSelf: 'flex-start',
+                                padding: '8px 16px',
+                                fontSize: '13px',
+                                fontWeight: '700',
+                                color: '#4f46e5',
+                                cursor: 'pointer',
+                                marginTop: '4px',
+                                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              }}
+                            >
+                              + Add 2nd Slot for {dayName}
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
-              </div>
-            )}
-          </>
-        )}
+              )}
+
+              {/* Modal Slot Form for Time-Grid */}
+              <AnimatePresence>
+                {hostDisplayMode === 'grid' && addingForDay !== null && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'rgba(12, 15, 29, 0.5)',
+                      backdropFilter: 'blur(8px)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 100,
+                      padding: '16px',
+                    }}
+                  >
+                    <motion.div
+                      initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                      className="glass-panel"
+                      style={{
+                        padding: '28px',
+                        maxWidth: '480px',
+                        width: '100%',
+                      }}
+                    >
+                      <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
+                        Add Availability Window for {dayNames[addingForDay]}
+                      </h3>
+                      <SlotForm
+                        dayOfWeek={addingForDay}
+                        onSubmit={onCreateSlot}
+                        onCancel={() => setAddingForDay(null)}
+                      />
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
