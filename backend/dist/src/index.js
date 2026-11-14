@@ -134,6 +134,17 @@ app.get('/slots', async (req, res) => {
             .whereIn('date', weekDates)
             .orderBy('id', 'asc');
         console.log('Exceptions count:', exceptions.length);
+        let bookings = [];
+        try {
+            bookings = await (0, db_1.default)('bookings')
+                .whereIn('date', weekDates)
+                .andWhere('status', 'confirmed')
+                .orderBy('start_time', 'asc');
+        }
+        catch {
+            // Table may not exist yet
+            bookings = [];
+        }
         const calendar = weekDates.map((date) => {
             const [y, m, d] = date.split('-').map(Number);
             const currentDayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
@@ -174,7 +185,11 @@ app.get('/slots', async (req, res) => {
                     }
                 }
             });
-            return { date, slots };
+            const dayBookings = bookings.filter((b) => {
+                const bDateStr = typeof b.date === 'string' ? b.date.slice(0, 10) : new Date(b.date).toISOString().slice(0, 10);
+                return bDateStr === date;
+            });
+            return { date, slots, bookings: dayBookings };
         });
         res.json({ weekStart: weekDates[0], weekEnd: weekDates[6], calendar });
     }
@@ -275,6 +290,98 @@ app.delete('/slots/:id', async (req, res) => {
         console.error('Error deleting slot for date:', error);
         res.status(500).json({
             error: 'Failed to delete slot for date',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
+    }
+});
+// Bookings endpoints
+app.get('/bookings', async (req, res) => {
+    try {
+        const { date, week } = req.query;
+        let query = (0, db_1.default)('bookings').where('status', 'confirmed').orderBy('date', 'asc').orderBy('start_time', 'asc');
+        if (date) {
+            query = query.andWhere('date', date);
+        }
+        else if (week) {
+            const parts = week.split('-').map(Number);
+            if (parts.length === 3 && !parts.some(isNaN)) {
+                const [year, month, day] = parts;
+                const inputDate = new Date(Date.UTC(year, month - 1, day));
+                const dayOfWeek = inputDate.getUTCDay();
+                const weekDates = [...Array(7).keys()].map((offset) => {
+                    const d = new Date(inputDate);
+                    d.setUTCDate(inputDate.getUTCDate() - dayOfWeek + offset);
+                    return d.toISOString().slice(0, 10);
+                });
+                query = query.whereIn('date', weekDates);
+            }
+        }
+        const bookings = await query;
+        res.json(bookings);
+    }
+    catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({
+            error: 'Failed to fetch bookings',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
+    }
+});
+app.post('/bookings', async (req, res) => {
+    try {
+        const { slot_id, date, start_time, end_time, client_name, client_email, meeting_title, notes } = req.body;
+        if (!date || !start_time || !end_time || !client_name || !client_email) {
+            return res.status(400).json({ error: 'Missing required booking fields (date, start_time, end_time, client_name, client_email)' });
+        }
+        // Check for conflicting confirmed bookings on that date/time
+        const conflict = await (0, db_1.default)('bookings')
+            .where('date', date)
+            .andWhere('status', 'confirmed')
+            .andWhere((builder) => {
+            builder
+                .whereBetween('start_time', [start_time, end_time])
+                .orWhereBetween('end_time', [start_time, end_time]);
+        })
+            .first();
+        if (conflict) {
+            return res.status(409).json({ error: 'This time slot has already been booked.' });
+        }
+        const [booking] = await (0, db_1.default)('bookings')
+            .insert({
+            slot_id: slot_id || null,
+            date,
+            start_time,
+            end_time,
+            client_name,
+            client_email,
+            meeting_title: meeting_title || 'Meeting with Hardik',
+            notes: notes || null,
+            status: 'confirmed',
+        })
+            .returning('*');
+        res.status(201).json(booking);
+    }
+    catch (error) {
+        console.error('Error creating booking:', error);
+        res.status(500).json({
+            error: 'Failed to create booking',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
+    }
+});
+app.delete('/bookings/:id', async (req, res) => {
+    try {
+        const bookingId = Number(req.params.id);
+        await (0, db_1.default)('bookings').where('id', bookingId).update({ status: 'cancelled', updated_at: db_1.default.fn.now() });
+        res.json({ message: 'Booking cancelled successfully' });
+    }
+    catch (error) {
+        console.error('Error cancelling booking:', error);
+        res.status(500).json({
+            error: 'Failed to cancel booking',
             message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
             code: error === null || error === void 0 ? void 0 : error.code,
         });

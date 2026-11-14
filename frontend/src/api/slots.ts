@@ -7,11 +7,27 @@ export interface Slot {
   start_time: string;
   end_time: string;
   exception: boolean;
+  category?: 'coffee' | 'mentorship' | 'consultation' | 'focus';
+}
+
+export interface Booking {
+  id: number;
+  slot_id?: number | null;
+  date: string;
+  start_time: string;
+  end_time: string;
+  client_name: string;
+  client_email: string;
+  meeting_title: string;
+  notes?: string;
+  status: 'confirmed' | 'cancelled';
+  created_at?: string;
 }
 
 export interface DailySlots {
   date: string;
   slots: Slot[];
+  bookings?: Booking[];
 }
 
 export interface WeekSlotsResponse {
@@ -66,6 +82,39 @@ export async function deleteSlotException(slot_id: number, date: string) {
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     throw new Error(errData.error || 'Failed to delete slot');
+  }
+  return res.json();
+}
+
+export async function createBooking(data: {
+  slot_id?: number | null;
+  date: string;
+  start_time: string;
+  end_time: string;
+  client_name: string;
+  client_email: string;
+  meeting_title?: string;
+  notes?: string;
+}): Promise<Booking> {
+  const res = await fetch(`${API_BASE_URL}/bookings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to create booking');
+  }
+  return res.json();
+}
+
+export async function cancelBooking(bookingId: number): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to cancel booking');
   }
   return res.json();
 }
