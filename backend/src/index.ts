@@ -13,6 +13,20 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.get('/db-health', async (_req: Request, res: Response) => {
+  let dbHost = 'unknown';
+  let isInternal = false;
+  if (process.env.DATABASE_URL) {
+    try {
+      const u = new URL(process.env.DATABASE_URL);
+      dbHost = u.hostname;
+      isInternal = (u.hostname.startsWith('dpg-') && !u.hostname.includes('.render.com')) || u.hostname.includes('.internal');
+    } catch {
+      dbHost = 'unparseable';
+    }
+  } else {
+    dbHost = process.env.DB_HOST || 'localhost';
+  }
+
   try {
     const rawResult = await db.raw('SELECT 1+1 AS result');
     const tables = await db('information_schema.tables')
@@ -20,6 +34,8 @@ app.get('/db-health', async (_req: Request, res: Response) => {
       .select('table_name');
     res.json({
       status: 'database connected',
+      dbHost,
+      isInternal,
       rawResult: rawResult.rows,
       tables: tables.map((t: { table_name: string }) => t.table_name),
     });
@@ -27,8 +43,13 @@ app.get('/db-health', async (_req: Request, res: Response) => {
     console.error('Database health check failed:', error);
     res.status(500).json({
       status: 'database error',
+      dbHost,
+      isInternal,
       message: error?.message || String(error),
       code: error?.code,
+      hint: error?.message?.includes('Connection terminated unexpectedly')
+        ? 'The database connection was terminated. This usually means either: 1) The Render PostgreSQL database is expired/suspended (free databases on Render expire after 30 days), or 2) An internal vs external SSL configuration mismatch.'
+        : undefined,
     });
   }
 });
