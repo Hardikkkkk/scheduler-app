@@ -9,12 +9,54 @@ const db_1 = __importDefault(require("./db"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-// Health check and root route
+// Health check and root routes
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+app.get('/db-health', async (_req, res) => {
+    try {
+        const rawResult = await db_1.default.raw('SELECT 1+1 AS result');
+        const tables = await (0, db_1.default)('information_schema.tables')
+            .where({ table_schema: 'public' })
+            .select('table_name');
+        res.json({
+            status: 'database connected',
+            rawResult: rawResult.rows,
+            tables: tables.map((t) => t.table_name),
+        });
+    }
+    catch (error) {
+        console.error('Database health check failed:', error);
+        res.status(500).json({
+            status: 'database error',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
+    }
+});
+app.all('/migrate', async (_req, res) => {
+    try {
+        const [batchNo, log] = await db_1.default.migrate.latest();
+        res.json({
+            success: true,
+            message: `Batch ${batchNo} ran ${log.length} migrations`,
+            migrations: log,
+        });
+    }
+    catch (error) {
+        console.error('Migration failed:', error);
+        res.status(500).json({
+            success: false,
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
+    }
+});
 app.get('/', (_req, res) => {
-    res.json({ message: 'Scheduler API is running', endpoints: ['/slots', '/health'] });
+    res.json({
+        message: 'Scheduler API is running',
+        endpoints: ['/slots', '/health', '/db-health', '/migrate'],
+    });
 });
 app.post('/slots', async (req, res) => {
     try {
@@ -35,7 +77,11 @@ app.post('/slots', async (req, res) => {
     }
     catch (error) {
         console.error('Error creating slot:', error);
-        res.status(500).json({ error: 'Failed to create slot' });
+        res.status(500).json({
+            error: 'Failed to create slot',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
     }
 });
 app.get('/slots', async (req, res) => {
@@ -60,11 +106,11 @@ app.get('/slots', async (req, res) => {
         });
         console.log('Week dates:', weekDates);
         const recurringSlots = await (0, db_1.default)('slots').select();
-        console.log('Recurring slots:', recurringSlots);
+        console.log('Recurring slots count:', recurringSlots.length);
         const exceptions = await (0, db_1.default)('slot_exceptions')
             .whereIn('date', weekDates)
             .orderBy('id', 'asc');
-        console.log('Exceptions:', exceptions);
+        console.log('Exceptions count:', exceptions.length);
         const calendar = weekDates.map((date) => {
             const [y, m, d] = date.split('-').map(Number);
             const currentDayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
@@ -111,7 +157,11 @@ app.get('/slots', async (req, res) => {
     }
     catch (error) {
         console.error('Error fetching slots:', error);
-        res.status(500).json({ error: 'Failed to fetch slots' });
+        res.status(500).json({
+            error: 'Failed to fetch slots',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
     }
 });
 app.patch('/slots/:id', async (req, res) => {
@@ -162,7 +212,11 @@ app.patch('/slots/:id', async (req, res) => {
     }
     catch (error) {
         console.error('Error updating slot:', error);
-        res.status(500).json({ error: 'Failed to update slot' });
+        res.status(500).json({
+            error: 'Failed to update slot',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
     }
 });
 app.delete('/slots/:id', async (req, res) => {
@@ -196,13 +250,30 @@ app.delete('/slots/:id', async (req, res) => {
     }
     catch (error) {
         console.error('Error deleting slot for date:', error);
-        res.status(500).json({ error: 'Failed to delete slot for date' });
+        res.status(500).json({
+            error: 'Failed to delete slot for date',
+            message: (error === null || error === void 0 ? void 0 : error.message) || String(error),
+            code: error === null || error === void 0 ? void 0 : error.code,
+        });
     }
 });
 app.use((_req, res) => {
     res.status(404).json({ error: 'Not Found' });
 });
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Backend running on http://localhost:${PORT}`);
+    // Attempt to auto-run pending migrations on startup
+    try {
+        const [batchNo, log] = await db_1.default.migrate.latest();
+        if (log.length > 0) {
+            console.log(`Applied migrations (batch ${batchNo}):`, log);
+        }
+        else {
+            console.log('Database schema is already up to date.');
+        }
+    }
+    catch (err) {
+        console.error('Startup migration notice:', (err === null || err === void 0 ? void 0 : err.message) || err);
+    }
 });

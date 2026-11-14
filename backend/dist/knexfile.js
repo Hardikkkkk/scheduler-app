@@ -1,6 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
+const migrationsDirectory = path_1.default.resolve(__dirname.endsWith('dist') ? path_1.default.join(__dirname, '..', 'migrations') : path_1.default.join(__dirname, 'migrations'));
 const connection = process.env.DATABASE_URL
     ? {
         connectionString: process.env.DATABASE_URL,
@@ -25,7 +30,8 @@ const config = {
         },
         migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: migrationsDirectory,
+            loadExtensions: ['.js', '.ts'],
         },
     },
     staging: {
@@ -37,7 +43,8 @@ const config = {
         },
         migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: migrationsDirectory,
+            loadExtensions: ['.js', '.ts'],
         },
     },
     production: {
@@ -49,7 +56,8 @@ const config = {
         },
         migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: migrationsDirectory,
+            loadExtensions: ['.js', '.ts'],
         },
     },
 };

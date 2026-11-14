@@ -1,4 +1,9 @@
 import type { Knex } from 'knex';
+import path from 'path';
+
+const migrationsDirectory = path.resolve(
+  __dirname.endsWith('dist') ? path.join(__dirname, '..', 'migrations') : path.join(__dirname, 'migrations')
+);
 
 const connection = process.env.DATABASE_URL
   ? {
@@ -25,7 +30,8 @@ const config: { [key: string]: Knex.Config } = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: './migrations',
+      directory: migrationsDirectory,
+      loadExtensions: ['.js', '.ts'],
     },
   },
 
@@ -38,7 +44,8 @@ const config: { [key: string]: Knex.Config } = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: './migrations',
+      directory: migrationsDirectory,
+      loadExtensions: ['.js', '.ts'],
     },
   },
 
@@ -51,7 +58,8 @@ const config: { [key: string]: Knex.Config } = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: './migrations',
+      directory: migrationsDirectory,
+      loadExtensions: ['.js', '.ts'],
     },
   },
 };
