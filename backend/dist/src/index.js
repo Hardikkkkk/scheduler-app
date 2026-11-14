@@ -9,7 +9,13 @@ const db_1 = __importDefault(require("./db"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-// Create a new recurring slot
+// Health check and root route
+app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+app.get('/', (_req, res) => {
+    res.json({ message: 'Scheduler API is running', endpoints: ['/slots', '/health'] });
+});
 app.post('/slots', async (req, res) => {
     try {
         const { day_of_week, start_time, end_time } = req.body;
@@ -20,45 +26,50 @@ app.post('/slots', async (req, res) => {
             day_of_week > 6) {
             return res.status(400).json({ error: 'Invalid slot data' });
         }
-        // Count existing slots for this day_of_week
         const existingSlotsCount = await (0, db_1.default)('slots').where({ day_of_week }).count('* as count').first();
-        if (existingSlotsCount && existingSlotsCount.count >= '2') {
+        if (existingSlotsCount && Number(existingSlotsCount.count) >= 2) {
             return res.status(400).json({ error: 'Maximum 2 slots allowed per day' });
         }
         const [slot] = await (0, db_1.default)('slots').insert({ day_of_week, start_time, end_time }).returning('*');
         res.json(slot);
     }
     catch (error) {
+        console.error('Error creating slot:', error);
         res.status(500).json({ error: 'Failed to create slot' });
     }
 });
-// Fetch slots for a given week (YYYY-MM-DD is any day of that week)
 app.get('/slots', async (req, res) => {
     try {
         const { week } = req.query;
-        if (!week) {
-            return res.status(400).json({ error: 'Week query param required' });
+        if (!week || typeof week !== 'string') {
+            return res.status(400).json({ error: 'Week query param required (YYYY-MM-DD)' });
         }
-        const weekStart = new Date(week);
-        const weekDay = weekStart.getDay();
-        // Calculate all dates from Sunday(0) to Saturday(6) for that week
+        // Parse date reliably using UTC to avoid server timezone skew
+        const parts = week.split('-').map(Number);
+        if (parts.length !== 3 || parts.some(isNaN)) {
+            return res.status(400).json({ error: 'Invalid week date format. Use YYYY-MM-DD.' });
+        }
+        const [year, month, day] = parts;
+        const inputDate = new Date(Date.UTC(year, month - 1, day));
+        const dayOfWeek = inputDate.getUTCDay();
+        // Sunday (offset 0) through Saturday (offset 6) of this week
         const weekDates = [...Array(7).keys()].map((offset) => {
-            const date = new Date(weekStart);
-            date.setDate(weekStart.getDate() - weekDay + offset);
+            const date = new Date(inputDate);
+            date.setUTCDate(inputDate.getUTCDate() - dayOfWeek + offset);
             return date.toISOString().slice(0, 10);
         });
         console.log('Week dates:', weekDates);
-        // Fetch recurring slots
         const recurringSlots = await (0, db_1.default)('slots').select();
         console.log('Recurring slots:', recurringSlots);
-        // Fetch exceptions for the week dates
-        const exceptions = await (0, db_1.default)('slot_exceptions').whereIn('date', weekDates);
+        const exceptions = await (0, db_1.default)('slot_exceptions')
+            .whereIn('date', weekDates)
+            .orderBy('id', 'asc');
         console.log('Exceptions:', exceptions);
-        // Merge recurring + apply exceptions for each day
         const calendar = weekDates.map((date) => {
-            const day = new Date(date).getDay();
+            const [y, m, d] = date.split('-').map(Number);
+            const currentDayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
             let slots = recurringSlots
-                .filter((slot) => slot.day_of_week === day)
+                .filter((slot) => slot.day_of_week === currentDayOfWeek)
                 .map((slot) => ({
                 id: slot.id,
                 date,
@@ -67,13 +78,21 @@ app.get('/slots', async (req, res) => {
                 exception: false,
             }));
             exceptions
-                .filter(ex => {
-                // Convert ex.date to local YYYY-MM-DD string ignoring timezone shift
-                const exDateLocal = new Date(Date.UTC(ex.date.getFullYear(), ex.date.getMonth(), ex.date.getDate())).toISOString().split('T')[0];
-                return exDateLocal === date;
+                .filter((ex) => {
+                let exDateStr;
+                if (typeof ex.date === 'string') {
+                    exDateStr = ex.date.slice(0, 10);
+                }
+                else if (ex.date instanceof Date) {
+                    exDateStr = ex.date.toISOString().slice(0, 10);
+                }
+                else {
+                    exDateStr = String(ex.date).slice(0, 10);
+                }
+                return exDateStr === date;
             })
-                .forEach(ex => {
-                const index = slots.findIndex(s => String(s.id) === String(ex.slot_id));
+                .forEach((ex) => {
+                const index = slots.findIndex((s) => String(s.id) === String(ex.slot_id));
                 if (ex.status === 'deleted') {
                     if (index !== -1)
                         slots.splice(index, 1);
@@ -88,7 +107,6 @@ app.get('/slots', async (req, res) => {
             });
             return { date, slots };
         });
-        console.log('Final calendar:', calendar);
         res.json({ weekStart: weekDates[0], weekEnd: weekDates[6], calendar });
     }
     catch (error) {
@@ -96,7 +114,6 @@ app.get('/slots', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch slots' });
     }
 });
-// Update a slot for a specific date (create exception edited)
 app.patch('/slots/:id', async (req, res) => {
     try {
         const slotId = Number(req.params.id);
@@ -104,12 +121,10 @@ app.patch('/slots/:id', async (req, res) => {
         if (!date || !new_start_time || !new_end_time) {
             return res.status(400).json({ error: 'Missing fields for updating exception' });
         }
-        // Count slots for given date (recurring + non-deleted exceptions)
-        const weekDay = new Date(date).getDay();
-        // Count recurring slots for this day of week
+        const [y, m, d] = date.split('-').map(Number);
+        const weekDay = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
         const recurringCountObj = await (0, db_1.default)('slots').where({ day_of_week: weekDay }).count('id as count').first();
         const recurringCount = Number((recurringCountObj === null || recurringCountObj === void 0 ? void 0 : recurringCountObj.count) || 0);
-        // Count non-deleted exceptions for this date except current slot (edited)
         const exceptionCountObj = await (0, db_1.default)('slot_exceptions')
             .where('date', date)
             .andWhere('slot_id', '!=', slotId)
@@ -121,20 +136,35 @@ app.patch('/slots/:id', async (req, res) => {
         if (totalCount > 2) {
             return res.status(400).json({ error: 'Maximum 2 slots allowed per day' });
         }
-        await (0, db_1.default)('slot_exceptions').insert({
-            slot_id: slotId,
-            date,
-            status: 'edited',
-            new_start_time,
-            new_end_time,
-        });
+        const existingException = await (0, db_1.default)('slot_exceptions')
+            .where({ slot_id: slotId, date })
+            .first();
+        if (existingException) {
+            await (0, db_1.default)('slot_exceptions')
+                .where({ id: existingException.id })
+                .update({
+                status: 'edited',
+                new_start_time,
+                new_end_time,
+                updated_at: db_1.default.fn.now(),
+            });
+        }
+        else {
+            await (0, db_1.default)('slot_exceptions').insert({
+                slot_id: slotId,
+                date,
+                status: 'edited',
+                new_start_time,
+                new_end_time,
+            });
+        }
         res.json({ message: 'Slot exception (edit) created' });
     }
     catch (error) {
+        console.error('Error updating slot:', error);
         res.status(500).json({ error: 'Failed to update slot' });
     }
 });
-// Delete a slot for a specific date (create exception deleted)
 app.delete('/slots/:id', async (req, res) => {
     try {
         const slotId = Number(req.params.id);
@@ -142,22 +172,36 @@ app.delete('/slots/:id', async (req, res) => {
         if (!date || typeof date !== 'string') {
             return res.status(400).json({ error: 'Date query parameter required for deleting exception' });
         }
-        await (0, db_1.default)('slot_exceptions').insert({
-            slot_id: slotId,
-            date,
-            status: 'deleted',
-        });
+        const existingException = await (0, db_1.default)('slot_exceptions')
+            .where({ slot_id: slotId, date })
+            .first();
+        if (existingException) {
+            await (0, db_1.default)('slot_exceptions')
+                .where({ id: existingException.id })
+                .update({
+                status: 'deleted',
+                new_start_time: null,
+                new_end_time: null,
+                updated_at: db_1.default.fn.now(),
+            });
+        }
+        else {
+            await (0, db_1.default)('slot_exceptions').insert({
+                slot_id: slotId,
+                date,
+                status: 'deleted',
+            });
+        }
         res.json({ message: 'Slot exception (delete) created' });
     }
     catch (error) {
+        console.error('Error deleting slot for date:', error);
         res.status(500).json({ error: 'Failed to delete slot for date' });
     }
 });
-// Fallback 404 handler for unmatched routes
-app.use((req, res) => {
+app.use((_req, res) => {
     res.status(404).json({ error: 'Not Found' });
 });
-// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`);

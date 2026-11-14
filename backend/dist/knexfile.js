@@ -1,57 +1,55 @@
 "use strict";
-var _a, _b, _c;
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+const connection = process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.DATABASE_URL.includes('localhost')
+            ? false
+            : { rejectUnauthorized: false },
+    }
+    : {
+        database: process.env.DB_NAME || 'scheduler',
+        user: process.env.DB_USER || 'postgres',
+        password: ((_a = process.env.DB_PASSWORD) === null || _a === void 0 ? void 0 : _a.toString()) || '1234',
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+    };
 const config = {
     development: {
         client: 'postgresql',
-        connection: {
-            database: process.env.DB_NAME || 'scheduler',
-            user: process.env.DB_USER || 'postgres',
-            password: ((_a = process.env.DB_PASSWORD) === null || _a === void 0 ? void 0 : _a.toString()) || '1234',
-            host: process.env.DB_HOST || 'localhost',
-            port: Number(process.env.DB_PORT) || 5432,
-        },
+        connection,
         pool: {
             min: 2,
             max: 10,
         },
         migrations: {
             tableName: 'knex_migrations',
-            directory: './src/database/migrations',
+            directory: './migrations',
         },
     },
     staging: {
         client: 'postgresql',
-        connection: {
-            database: process.env.DB_NAME || 'scheduler',
-            user: process.env.DB_USER || 'postgres',
-            password: ((_b = process.env.DB_PASSWORD) === null || _b === void 0 ? void 0 : _b.toString()) || '1234',
-            host: process.env.DB_HOST || 'localhost',
-            port: Number(process.env.DB_PORT) || 5432,
-        },
+        connection,
         pool: {
             min: 2,
             max: 10,
         },
         migrations: {
             tableName: 'knex_migrations',
+            directory: './migrations',
         },
     },
     production: {
         client: 'postgresql',
-        connection: process.env.DATABASE_URL || {
-            database: process.env.DB_NAME || 'scheduler',
-            user: process.env.DB_USER || 'postgres',
-            password: ((_c = process.env.DB_PASSWORD) === null || _c === void 0 ? void 0 : _c.toString()) || '1234',
-            host: process.env.DB_HOST || 'localhost',
-            port: Number(process.env.DB_PORT) || 5432,
-        },
+        connection,
         pool: {
             min: 2,
             max: 10,
         },
         migrations: {
             tableName: 'knex_migrations',
+            directory: './migrations',
         },
     },
 };

@@ -1,5 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 export interface Slot {
   id: number;
@@ -25,12 +25,12 @@ export async function fetchWeekSlots(weekDate: string): Promise<WeekSlotsRespons
   console.log('Fetching slots from:', url);
   const res = await fetch(url);
   if (!res.ok) {
-    console.error('Error fetching slots:', res.status, res.statusText);
-    throw new Error('Failed to fetch week slots');
+    const errorText = await res.text().catch(() => '');
+    console.error('Error fetching slots:', res.status, res.statusText, errorText);
+    throw new Error(`Failed to fetch week slots (${res.status} ${res.statusText})`);
   }
   return res.json();
 }
-
 
 export async function createSlot(day_of_week: number, start_time: string, end_time: string) {
   const res = await fetch(`${API_BASE_URL}/slots`, {
@@ -38,7 +38,10 @@ export async function createSlot(day_of_week: number, start_time: string, end_ti
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ day_of_week, start_time, end_time }),
   });
-  if (!res.ok) throw new Error('Failed to create slot');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to create slot');
+  }
   return res.json();
 }
 
@@ -48,7 +51,10 @@ export async function updateSlotException(id: number, date: string, new_start_ti
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ date, new_start_time, new_end_time }),
   });
-  if (!res.ok) throw new Error('Failed to update slot');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update slot');
+  }
   return res.json();
 }
 
@@ -57,8 +63,9 @@ export async function deleteSlotException(slot_id: number, date: string) {
     method: 'DELETE',
   });
   console.log('Delete response:', res.status);
-  if (!res.ok) throw new Error('Failed to delete slot');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete slot');
+  }
   return res.json();
 }
-
-

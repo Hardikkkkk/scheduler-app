@@ -27,7 +27,7 @@ export default function Calendar() {
         setCalendar(data);
         setError(null);
       })
-      .catch(() => setError('Failed to load slots'))
+      .catch((err) => setError(err.message || 'Failed to load slots'))
       .finally(() => setLoading(false));
   };
 
@@ -37,18 +37,20 @@ export default function Calendar() {
 
   const days = calendar?.calendar ?? [];
 
+  const shiftWeek = (baseDateStr: string, daysOffset: number) => {
+    const [y, m, d] = baseDateStr.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d + daysOffset));
+    return date.toISOString().slice(0, 10);
+  };
+
   const prevWeek = () => {
-    if (!calendar) return;
-    const prevDate = new Date(calendar.weekStart);
-    prevDate.setDate(prevDate.getDate() - 7);
-    setWeekDate(prevDate.toISOString().slice(0, 10));
+    const base = calendar?.weekStart || weekDate;
+    setWeekDate(shiftWeek(base, -7));
   };
 
   const nextWeek = () => {
-    if (!calendar) return;
-    const nextDate = new Date(calendar.weekStart);
-    nextDate.setDate(nextDate.getDate() + 7);
-    setWeekDate(nextDate.toISOString().slice(0, 10));
+    const base = calendar?.weekStart || weekDate;
+    setWeekDate(shiftWeek(base, 7));
   };
 
   const onCreateSlot = async (startTime: string, endTime: string) => {
@@ -57,8 +59,8 @@ export default function Calendar() {
       await createSlot(addingForDay, startTime, endTime);
       setAddingForDay(null);
       loadSlots();
-    } catch {
-      alert('Failed to create slot');
+    } catch (err: any) {
+      alert(err.message || 'Failed to create slot');
     }
   };
 
@@ -80,8 +82,8 @@ export default function Calendar() {
       await updateSlotException(editingSlot.id, editingSlot.date, editStartTime, editEndTime);
       cancelEdit();
       loadSlots();
-    } catch {
-      alert('Failed to update slot');
+    } catch (err: any) {
+      alert(err.message || 'Failed to update slot');
     }
   };
 
@@ -90,8 +92,8 @@ export default function Calendar() {
     try {
       await deleteSlotException(slotId, date);
       loadSlots();
-    } catch {
-      alert('Failed to delete slot');
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete slot');
     }
   };
 
@@ -329,9 +331,36 @@ export default function Calendar() {
             color: '#dc2626',
             borderRadius: '8px',
             fontSize: '14px',
-            fontWeight: '500'
+            fontWeight: '500',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '16px',
+            flexWrap: 'wrap'
           }}>
-            {error}
+            <div>
+              <span>{error}</span>
+              <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#991b1b' }}>
+                If using the Render live demo, the free instance may be waking up from sleep (can take 50-60s).
+              </p>
+            </div>
+            <button
+              onClick={loadSlots}
+              style={{
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'background-color 0.2s ease'
+              }}
+              onMouseEnter={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#dc2626')}
+              onMouseLeave={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#ef4444')}
+            >
+              Retry
+            </button>
           </div>
         )}
 

@@ -1,10 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .btn {
-  @apply bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600;
-}
-.btn {
-  @apply px-3 py-1 rounded cursor-pointer;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
