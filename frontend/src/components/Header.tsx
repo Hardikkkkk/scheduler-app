@@ -73,7 +73,7 @@ export default function Header({
               color: 'white',
               fontSize: '20px',
               fontWeight: '800',
-              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
+              boxShadow: '0 4px 18px rgba(99, 102, 241, 0.5)',
               cursor: 'pointer',
             }}
           >
@@ -85,9 +85,8 @@ export default function Header({
                 style={{
                   fontSize: '19px',
                   fontWeight: '800',
-                  color: '#0f172a',
+                  color: '#f8fafc',
                   letterSpacing: '-0.03em',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}
               >
                 Orbit Scheduler
@@ -98,23 +97,23 @@ export default function Header({
                   color: 'white',
                   fontSize: '10px',
                   fontWeight: '800',
-                  padding: '2px 7px',
+                  padding: '2px 8px',
                   borderRadius: '20px',
                   letterSpacing: '0.05em',
                   textTransform: 'uppercase',
-                  boxShadow: '0 2px 6px rgba(99, 102, 241, 0.3)',
+                  boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)',
                 }}
               >
-                PRO
+                GLASS PRO
               </span>
             </div>
-            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
-              Glassmorphic Availability Suite
+            <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '500' }}>
+              Crystal Glassmorphic Availability Suite
             </span>
           </div>
         </div>
 
-        {/* Center: Dual-Mode Animated Switcher (React Bits Style) */}
+        {/* Center: Dual-Mode Animated Glass Switcher */}
         <div
           className="glass-pill"
           style={{
@@ -137,11 +136,10 @@ export default function Header({
               fontSize: '13px',
               fontWeight: '700',
               cursor: 'pointer',
-              color: currentView === 'host' ? '#4f46e5' : '#64748b',
+              color: currentView === 'host' ? '#ffffff' : '#94a3b8',
               backgroundColor: 'transparent',
               zIndex: 2,
               transition: 'color 0.2s ease',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
             {currentView === 'host' && (
@@ -150,9 +148,11 @@ export default function Header({
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  backgroundColor: 'white',
+                  backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(10px)',
                   borderRadius: '10px',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0,0,0,0.04)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -176,11 +176,10 @@ export default function Header({
               fontSize: '13px',
               fontWeight: '700',
               cursor: 'pointer',
-              color: currentView === 'client' ? '#4f46e5' : '#64748b',
+              color: currentView === 'client' ? '#ffffff' : '#94a3b8',
               backgroundColor: 'transparent',
               zIndex: 2,
               transition: 'color 0.2s ease',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
             {currentView === 'client' && (
@@ -189,9 +188,11 @@ export default function Header({
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  backgroundColor: 'white',
+                  backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(10px)',
                   borderRadius: '10px',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0,0,0,0.04)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -211,7 +212,7 @@ export default function Header({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '4px 10px',
+              padding: '5px 12px',
             }}
           >
             <span style={{ fontSize: '13px' }}>🌍</span>
@@ -221,16 +222,15 @@ export default function Header({
               style={{
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: '#334155',
+                color: '#f8fafc',
                 fontSize: '12px',
                 fontWeight: '700',
                 outline: 'none',
                 cursor: 'pointer',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
               {COMMON_TIMEZONES.map((tz) => (
-                <option key={tz.value} value={tz.value}>
+                <option key={tz.value} value={tz.value} style={{ backgroundColor: '#0f172a', color: '#f8fafc' }}>
                   {tz.label}
                 </option>
               ))}
@@ -239,8 +239,8 @@ export default function Header({
 
           {/* Share Button */}
           <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             type="button"
             onClick={handleCopyLink}
             className="gradient-btn"
@@ -253,7 +253,6 @@ export default function Header({
               fontSize: '13px',
               fontWeight: '700',
               cursor: 'pointer',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
             <span>{copied ? '✓' : '🔗'}</span>

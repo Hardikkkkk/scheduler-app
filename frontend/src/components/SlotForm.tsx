@@ -29,7 +29,7 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Quick Presets */}
       <div>
-        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#64748b', marginBottom: '8px', textTransform: 'uppercase' }}>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}>
           Quick Window Presets
         </label>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -41,16 +41,13 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
                 setStartTime(p.start);
                 setEndTime(p.end);
               }}
+              className="glass-pill"
               style={{
-                border: '1px solid #cbd5e1',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                padding: '6px 10px',
+                padding: '6px 12px',
                 fontSize: '12px',
-                fontWeight: '600',
-                color: '#334155',
+                fontWeight: '700',
+                color: '#e2e8f0',
                 cursor: 'pointer',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
               {p.label}
@@ -61,7 +58,7 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
             Start Time
           </label>
           <input
@@ -69,23 +66,19 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
+            className="glass-input"
             style={{
               width: '100%',
               padding: '10px 14px',
-              borderRadius: '10px',
-              border: '1px solid #cbd5e1',
               fontSize: '14px',
-              fontWeight: '600',
-              outline: 'none',
-              backgroundColor: 'white',
+              fontWeight: '700',
               boxSizing: 'border-box',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           />
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
             End Time
           </label>
           <input
@@ -93,17 +86,13 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             required
+            className="glass-input"
             style={{
               width: '100%',
               padding: '10px 14px',
-              borderRadius: '10px',
-              border: '1px solid #cbd5e1',
               fontSize: '14px',
-              fontWeight: '600',
-              outline: 'none',
-              backgroundColor: 'white',
+              fontWeight: '700',
               boxSizing: 'border-box',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           />
         </div>
@@ -113,17 +102,14 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
         <button
           type="button"
           onClick={onCancel}
+          className="glass-pill"
           style={{
             flex: 1,
             padding: '11px',
-            borderRadius: '10px',
-            border: '1px solid #cbd5e1',
-            backgroundColor: 'white',
-            color: '#64748b',
+            color: '#94a3b8',
             fontSize: '13px',
             fontWeight: '700',
             cursor: 'pointer',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
           }}
         >
           Cancel
@@ -136,11 +122,10 @@ export default function SlotForm({ onSubmit, onCancel }: SlotFormProps) {
           style={{
             flex: 2,
             padding: '11px',
-            borderRadius: '10px',
+            borderRadius: '12px',
             fontSize: '13px',
             fontWeight: '700',
             cursor: 'pointer',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
           }}
         >
           Save Availability Window

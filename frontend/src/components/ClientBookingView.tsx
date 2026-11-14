@@ -140,7 +140,7 @@ export default function ClientBookingView({
       transition={{ duration: 0.5 }}
       style={{ maxWidth: '980px', margin: '0 auto', width: '100%' }}
     >
-      {/* Host Bio Glass Card */}
+      {/* Host Bio Transparent Glass Card */}
       <div
         className="glass-panel"
         style={{
@@ -158,47 +158,47 @@ export default function ClientBookingView({
             width: '64px',
             height: '64px',
             borderRadius: '20px',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '26px',
             fontWeight: '800',
-            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.35)',
+            boxShadow: '0 8px 25px rgba(99, 102, 241, 0.45)',
           }}
         >
           H
         </motion.div>
         <div style={{ flex: 1, minWidth: '220px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#f8fafc', margin: 0, letterSpacing: '-0.02em' }}>
               Hardik's Calendar
             </h2>
             <span
               style={{
-                backgroundColor: '#dcfce7',
-                color: '#15803d',
+                backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                border: '1px solid rgba(34, 197, 94, 0.35)',
+                color: '#4ade80',
                 fontSize: '11px',
                 fontWeight: '800',
                 padding: '3px 10px',
                 borderRadius: '20px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                boxShadow: '0 1px 3px rgba(22, 163, 74, 0.15)',
               }}
             >
               ● Accepting Bookings
             </span>
           </div>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0, fontWeight: '500' }}>
+          <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, fontWeight: '500' }}>
             Select an open slot to schedule a 1:1 mentorship session, tech consult, or project review.
           </p>
         </div>
 
         {/* Duration Selector */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>
             Session Length
           </span>
           <div className="glass-pill" style={{ display: 'flex', gap: '4px', padding: '4px' }}>
@@ -219,11 +219,10 @@ export default function ClientBookingView({
                   fontSize: '13px',
                   fontWeight: '700',
                   cursor: 'pointer',
-                  backgroundColor: meetingDuration === dur ? '#4f46e5' : 'transparent',
-                  color: meetingDuration === dur ? 'white' : '#64748b',
-                  boxShadow: meetingDuration === dur ? '0 2px 8px rgba(79, 70, 229, 0.3)' : 'none',
+                  backgroundColor: meetingDuration === dur ? '#6366f1' : 'transparent',
+                  color: meetingDuration === dur ? 'white' : '#94a3b8',
+                  boxShadow: meetingDuration === dur ? '0 2px 10px rgba(99, 102, 241, 0.4)' : 'none',
                   transition: 'all 0.15s ease',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}
               >
                 {dur}m
@@ -247,10 +246,10 @@ export default function ClientBookingView({
           {/* Week Navigator */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
-              <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase' }}>
                 Select Date & Time
               </span>
-              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '2px 0 0 0' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f8fafc', margin: '2px 0 0 0' }}>
                 {calendar?.weekStart} – {calendar?.weekEnd}
               </h3>
             </div>
@@ -266,7 +265,7 @@ export default function ClientBookingView({
                   fontSize: '13px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
-                  color: '#334155',
+                  color: '#e2e8f0',
                 }}
               >
                 ‹ Prev
@@ -282,7 +281,7 @@ export default function ClientBookingView({
                   fontSize: '13px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
-                  color: '#334155',
+                  color: '#e2e8f0',
                 }}
               >
                 Next ›
@@ -298,7 +297,7 @@ export default function ClientBookingView({
               gap: '8px',
               marginBottom: '24px',
               paddingBottom: '16px',
-              borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             {days.map((day) => {
@@ -324,22 +323,22 @@ export default function ClientBookingView({
                     alignItems: 'center',
                     padding: '12px 6px',
                     borderRadius: '16px',
-                    border: isSelected ? '2px solid #4f46e5' : '1px solid rgba(226, 232, 240, 0.8)',
-                    backgroundColor: isSelected ? 'rgba(238, 242, 255, 0.9)' : 'rgba(255, 255, 255, 0.7)',
+                    border: isSelected ? '2px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(10px)',
                     cursor: 'pointer',
-                    boxShadow: isSelected ? '0 4px 14px rgba(79, 70, 229, 0.2)' : 'none',
+                    boxShadow: isSelected ? '0 4px 16px rgba(99, 102, 241, 0.3)' : 'none',
                     transition: 'all 0.15s ease',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
                   }}
                 >
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: isSelected ? '#4f46e5' : '#64748b' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: isSelected ? '#c7d2fe' : '#94a3b8' }}>
                     {dayName}
                   </span>
                   <span
                     style={{
                       fontSize: '17px',
                       fontWeight: '800',
-                      color: isSelected ? '#4f46e5' : '#0f172a',
+                      color: isSelected ? '#ffffff' : '#f8fafc',
                       marginTop: '4px',
                     }}
                   >
@@ -350,7 +349,7 @@ export default function ClientBookingView({
                       width: '6px',
                       height: '6px',
                       borderRadius: '50%',
-                      backgroundColor: hasSlots ? (isSelected ? '#4f46e5' : '#22c55e') : 'transparent',
+                      backgroundColor: hasSlots ? (isSelected ? '#818cf8' : '#4ade80') : 'transparent',
                       marginTop: '6px',
                     }}
                   />
@@ -362,10 +361,10 @@ export default function ClientBookingView({
           {/* Slots Section */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>
+              <span style={{ fontSize: '14px', fontWeight: '700', color: '#f8fafc' }}>
                 Open Windows ({availableSlots.length} available)
               </span>
-              <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>
+              <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>
                 Duration: {meetingDuration} mins
               </span>
             </div>
@@ -375,14 +374,14 @@ export default function ClientBookingView({
                 style={{
                   textAlign: 'center',
                   padding: '48px 16px',
-                  backgroundColor: 'rgba(248, 250, 252, 0.6)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   borderRadius: '16px',
-                  border: '1px dashed #cbd5e1',
+                  border: '1px dashed rgba(255, 255, 255, 0.15)',
                 }}
               >
                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>☕</div>
-                <h4 style={{ margin: '0 0 4px 0', color: '#334155', fontWeight: '700' }}>No open slots on this day</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
+                <h4 style={{ margin: '0 0 4px 0', color: '#e2e8f0', fontWeight: '700' }}>No open slots on this day</h4>
+                <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8' }}>
                   Please pick another day or switch session duration.
                 </p>
               </div>
@@ -408,9 +407,10 @@ export default function ClientBookingView({
                       style={{
                         padding: '14px 12px',
                         borderRadius: '14px',
-                        border: isSlotSelected ? '2px solid #4f46e5' : '1px solid rgba(226, 232, 240, 0.9)',
-                        backgroundColor: isSlotSelected ? '#4f46e5' : 'rgba(255, 255, 255, 0.85)',
-                        color: isSlotSelected ? 'white' : '#1e293b',
+                        border: isSlotSelected ? '2px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.12)',
+                        backgroundColor: isSlotSelected ? 'rgba(99, 102, 241, 0.45)' : 'rgba(255, 255, 255, 0.07)',
+                        backdropFilter: 'blur(12px)',
+                        color: '#f8fafc',
                         fontWeight: '700',
                         fontSize: '14px',
                         cursor: 'pointer',
@@ -419,14 +419,13 @@ export default function ClientBookingView({
                         alignItems: 'center',
                         gap: '3px',
                         boxShadow: isSlotSelected
-                          ? '0 6px 18px rgba(79, 70, 229, 0.35)'
-                          : '0 2px 6px rgba(0,0,0,0.03)',
+                          ? '0 6px 20px rgba(99, 102, 241, 0.4)'
+                          : '0 2px 8px rgba(0,0,0,0.15)',
                         transition: 'all 0.15s ease',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                       }}
                     >
                       <span>{format12Hour(slot.start)}</span>
-                      <span style={{ fontSize: '11px', opacity: isSlotSelected ? 0.9 : 0.6, fontWeight: '500' }}>
+                      <span style={{ fontSize: '11px', opacity: isSlotSelected ? 0.95 : 0.7, fontWeight: '500' }}>
                         to {format12Hour(slot.end)}
                       </span>
                     </motion.button>
@@ -448,21 +447,21 @@ export default function ClientBookingView({
               className="glass-panel"
               style={{ padding: '28px' }}
             >
-              <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(226, 232, 240, 0.6)' }}>
-                <span style={{ fontSize: '12px', fontWeight: '800', color: '#4f46e5', textTransform: 'uppercase' }}>
+              <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span style={{ fontSize: '12px', fontWeight: '800', color: '#a5b4fc', textTransform: 'uppercase' }}>
                   Booking Summary
                 </span>
-                <h3 style={{ margin: '4px 0 2px 0', fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: '4px 0 2px 0', fontSize: '20px', fontWeight: '800', color: '#f8fafc' }}>
                   {activeDate}
                 </h3>
-                <p style={{ margin: 0, fontSize: '14px', color: '#64748b', fontWeight: '600' }}>
+                <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>
                   {format12Hour(selectedSlotTime.start)} – {format12Hour(selectedSlotTime.end)} ({meetingDuration} min)
                 </p>
               </div>
 
               <form onSubmit={handleBookSlot} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
                     Your Full Name *
                   </label>
                   <input
@@ -471,22 +470,18 @@ export default function ClientBookingView({
                     placeholder="e.g. Alex Smith"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
+                    className="glass-input"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
                       fontSize: '14px',
-                      outline: 'none',
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
                       boxSizing: 'border-box',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
                     Your Email Address *
                   </label>
                   <input
@@ -495,44 +490,36 @@ export default function ClientBookingView({
                     placeholder="alex@example.com"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
+                    className="glass-input"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
                       fontSize: '14px',
-                      outline: 'none',
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
                       boxSizing: 'border-box',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
                     Meeting Topic
                   </label>
                   <input
                     type="text"
                     value={meetingTopic}
                     onChange={(e) => setMeetingTopic(e.target.value)}
+                    className="glass-input"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
                       fontSize: '14px',
-                      outline: 'none',
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
                       boxSizing: 'border-box',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>
                     Notes / Preparation
                   </label>
                   <textarea
@@ -540,15 +527,11 @@ export default function ClientBookingView({
                     placeholder="Anything specific you'd like to prepare or discuss?"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
+                    className="glass-input"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
                       fontSize: '14px',
-                      outline: 'none',
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                       boxSizing: 'border-box',
                     }}
                   />
@@ -558,16 +541,13 @@ export default function ClientBookingView({
                   <button
                     type="button"
                     onClick={() => setSelectedSlotTime(null)}
+                    className="glass-pill"
                     style={{
                       flex: 1,
                       padding: '12px',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
-                      backgroundColor: 'white',
-                      color: '#64748b',
+                      color: '#94a3b8',
                       fontWeight: '700',
                       cursor: 'pointer',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   >
                     Cancel
@@ -584,7 +564,6 @@ export default function ClientBookingView({
                       borderRadius: '12px',
                       fontWeight: '700',
                       cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   >
                     {isSubmitting ? 'Confirming...' : 'Confirm Booking 🚀'}
@@ -595,7 +574,7 @@ export default function ClientBookingView({
           )}
         </AnimatePresence>
 
-        {/* Confirmed Booking Modal (Confetti Glass Card) */}
+        {/* Confirmed Booking Modal (Glass Celebration Card) */}
         <AnimatePresence>
           {confirmedBooking && (
             <motion.div
@@ -605,16 +584,16 @@ export default function ClientBookingView({
               className="glass-panel"
               style={{
                 padding: '40px 28px',
-                border: '2px solid rgba(134, 239, 172, 0.8)',
+                border: '2px solid rgba(74, 222, 128, 0.5)',
                 textAlign: 'center',
-                boxShadow: '0 20px 50px rgba(22, 163, 74, 0.15)',
+                boxShadow: '0 20px 50px rgba(34, 197, 94, 0.25)',
               }}
             >
               <div style={{ fontSize: '54px', marginBottom: '12px' }}>🎉</div>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#166534', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#4ade80', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
                 Booking Confirmed!
               </h2>
-              <p style={{ color: '#475569', fontSize: '15px', margin: '0 0 24px 0', fontWeight: '500' }}>
+              <p style={{ color: '#cbd5e1', fontSize: '15px', margin: '0 0 24px 0', fontWeight: '500' }}>
                 We've reserved this time slot for <strong>{confirmedBooking.client_name}</strong>.
               </p>
 
@@ -622,20 +601,21 @@ export default function ClientBookingView({
                 style={{
                   display: 'inline-block',
                   textAlign: 'left',
-                  backgroundColor: 'rgba(240, 253, 244, 0.8)',
+                  backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                  backdropFilter: 'blur(12px)',
                   padding: '20px 28px',
                   borderRadius: '16px',
-                  border: '1px solid #bbf7d0',
+                  border: '1px solid rgba(74, 222, 128, 0.3)',
                   marginBottom: '28px',
                 }}
               >
-                <div style={{ fontSize: '15px', color: '#166534', fontWeight: '700', marginBottom: '6px' }}>
+                <div style={{ fontSize: '15px', color: '#4ade80', fontWeight: '700', marginBottom: '6px' }}>
                   📅 {confirmedBooking.date}
                 </div>
-                <div style={{ fontSize: '15px', color: '#166534', fontWeight: '700', marginBottom: '6px' }}>
+                <div style={{ fontSize: '15px', color: '#4ade80', fontWeight: '700', marginBottom: '6px' }}>
                   ⏰ {format12Hour(confirmedBooking.start_time)} – {format12Hour(confirmedBooking.end_time)}
                 </div>
-                <div style={{ fontSize: '14px', color: '#166534', fontWeight: '600' }}>
+                <div style={{ fontSize: '14px', color: '#86efac', fontWeight: '600' }}>
                   📌 {confirmedBooking.meeting_title}
                 </div>
               </div>
@@ -658,8 +638,7 @@ export default function ClientBookingView({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    boxShadow: '0 6px 18px rgba(22, 163, 74, 0.35)',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    boxShadow: '0 6px 20px rgba(22, 163, 74, 0.4)',
                   }}
                 >
                   📥 Add to Calendar (.ics)
@@ -681,8 +660,7 @@ export default function ClientBookingView({
                     fontSize: '14px',
                     fontWeight: '700',
                     cursor: 'pointer',
-                    color: '#334155',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: '#e2e8f0',
                   }}
                 >
                   Book Another Slot

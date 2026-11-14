@@ -46,20 +46,20 @@ export default function TimeGridView({
       className="glass-panel"
       style={{ overflow: 'hidden' }}
     >
-      {/* Grid Header */}
+      {/* Grid Header (Days) */}
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: '70px repeat(7, 1fr)',
-          borderBottom: '1px solid rgba(226, 232, 240, 0.7)',
-          backgroundColor: 'rgba(248, 250, 252, 0.7)',
-          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(16px)',
           position: 'sticky',
           top: 0,
           zIndex: 20,
         }}
       >
-        <div style={{ padding: '16px 8px', borderRight: '1px solid rgba(226, 232, 240, 0.7)' }} />
+        <div style={{ padding: '16px 8px', borderRight: '1px solid rgba(255, 255, 255, 0.08)' }} />
         {days.map((day) => {
           const [y, m, d] = day.date.split('-').map(Number);
           const dateObj = new Date(Date.UTC(y, m - 1, d));
@@ -72,15 +72,15 @@ export default function TimeGridView({
               style={{
                 padding: '14px 8px',
                 textAlign: 'center',
-                borderRight: '1px solid rgba(226, 232, 240, 0.6)',
-                backgroundColor: isToday ? 'rgba(238, 242, 255, 0.6)' : 'transparent',
+                borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+                backgroundColor: isToday ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
               }}
             >
               <div
                 style={{
                   fontSize: '11px',
-                  fontWeight: '700',
-                  color: isToday ? '#4f46e5' : '#64748b',
+                  fontWeight: '800',
+                  color: isToday ? '#a5b4fc' : '#94a3b8',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
                 }}
@@ -98,9 +98,9 @@ export default function TimeGridView({
                   marginTop: '4px',
                   fontSize: '15px',
                   fontWeight: '800',
-                  backgroundColor: isToday ? '#4f46e5' : 'transparent',
-                  color: isToday ? 'white' : '#0f172a',
-                  boxShadow: isToday ? '0 2px 8px rgba(79, 70, 229, 0.35)' : 'none',
+                  backgroundColor: isToday ? '#6366f1' : 'transparent',
+                  color: isToday ? 'white' : '#f8fafc',
+                  boxShadow: isToday ? '0 2px 10px rgba(99, 102, 241, 0.4)' : 'none',
                 }}
               >
                 {d}
@@ -110,7 +110,7 @@ export default function TimeGridView({
         })}
       </div>
 
-      {/* Grid Canvas */}
+      {/* Grid Canvas (Hours x Days) */}
       <div
         style={{
           display: 'grid',
@@ -120,7 +120,7 @@ export default function TimeGridView({
         }}
       >
         {/* Time Labels Sidebar */}
-        <div style={{ borderRight: '1px solid rgba(226, 232, 240, 0.7)', backgroundColor: 'rgba(248, 250, 252, 0.5)' }}>
+        <div style={{ borderRight: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
           {hours.map((hour) => {
             const period = hour >= 12 ? 'PM' : 'AM';
             const displayHour = hour % 12 || 12;
@@ -131,12 +131,12 @@ export default function TimeGridView({
                 style={{
                   height: `${HOUR_HEIGHT}px`,
                   boxSizing: 'border-box',
-                  borderBottom: '1px solid rgba(241, 245, 249, 0.8)',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                   paddingRight: '10px',
                   textAlign: 'right',
                   fontSize: '11px',
                   fontWeight: '700',
-                  color: '#94a3b8',
+                  color: '#64748b',
                   transform: 'translateY(-8px)',
                 }}
               >
@@ -155,7 +155,7 @@ export default function TimeGridView({
               key={day.date}
               style={{
                 position: 'relative',
-                borderRight: '1px solid rgba(241, 245, 249, 0.8)',
+                borderRight: '1px solid rgba(255, 255, 255, 0.05)',
                 height: '100%',
               }}
             >
@@ -171,12 +171,12 @@ export default function TimeGridView({
                   style={{
                     height: `${HOUR_HEIGHT}px`,
                     boxSizing: 'border-box',
-                    borderBottom: '1px solid rgba(241, 245, 249, 0.8)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                     cursor: 'pointer',
                     transition: 'background-color 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.backgroundColor = 'rgba(240, 253, 244, 0.6)';
+                    (e.target as HTMLElement).style.backgroundColor = 'rgba(99, 102, 241, 0.12)';
                   }}
                   onMouseLeave={(e) => {
                     (e.target as HTMLElement).style.backgroundColor = 'transparent';
@@ -201,8 +201,8 @@ export default function TimeGridView({
                       left: '4px',
                       right: '4px',
                       height: `${height}px`,
-                      backgroundColor: slot.exception ? 'rgba(254, 240, 138, 0.9)' : 'rgba(224, 231, 255, 0.9)',
-                      border: slot.exception ? '1.5px solid #ca8a04' : '1.5px solid #6366f1',
+                      backgroundColor: slot.exception ? 'rgba(234, 179, 8, 0.28)' : 'rgba(99, 102, 241, 0.32)',
+                      border: slot.exception ? '1.5px solid rgba(250, 204, 21, 0.7)' : '1.5px solid rgba(129, 140, 248, 0.7)',
                       borderRadius: '12px',
                       padding: '6px 8px',
                       boxSizing: 'border-box',
@@ -210,8 +210,10 @@ export default function TimeGridView({
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      backdropFilter: 'blur(8px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                      backdropFilter: 'blur(12px)',
+                      boxShadow: slot.exception
+                        ? '0 4px 16px rgba(234, 179, 8, 0.25)'
+                        : '0 4px 16px rgba(99, 102, 241, 0.3)',
                     }}
                   >
                     <div>
@@ -219,7 +221,7 @@ export default function TimeGridView({
                         style={{
                           fontSize: '10px',
                           fontWeight: '800',
-                          color: slot.exception ? '#854d0e' : '#3730a3',
+                          color: slot.exception ? '#fde047' : '#c7d2fe',
                           textTransform: 'uppercase',
                         }}
                       >
@@ -229,7 +231,7 @@ export default function TimeGridView({
                         style={{
                           fontSize: '12px',
                           fontWeight: '800',
-                          color: '#0f172a',
+                          color: '#ffffff',
                           marginTop: '2px',
                         }}
                       >
@@ -245,7 +247,8 @@ export default function TimeGridView({
                         }}
                         style={{
                           border: 'none',
-                          backgroundColor: 'rgba(255,255,255,0.85)',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(4px)',
                           borderRadius: '6px',
                           padding: '2px 6px',
                           fontSize: '11px',
@@ -261,12 +264,13 @@ export default function TimeGridView({
                         }}
                         style={{
                           border: 'none',
-                          backgroundColor: 'rgba(255,255,255,0.85)',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(4px)',
                           borderRadius: '6px',
                           padding: '2px 6px',
                           fontSize: '11px',
                           cursor: 'pointer',
-                          color: '#dc2626',
+                          color: '#f87171',
                         }}
                       >
                         🗑️
@@ -293,9 +297,9 @@ export default function TimeGridView({
                       left: '6px',
                       right: '6px',
                       height: `${height}px`,
-                      backgroundColor: 'rgba(34, 197, 94, 0.95)',
+                      backgroundColor: 'rgba(34, 197, 94, 0.35)',
                       color: 'white',
-                      border: '1.5px solid #16a34a',
+                      border: '1.5px solid rgba(74, 222, 128, 0.8)',
                       borderRadius: '12px',
                       padding: '6px 8px',
                       boxSizing: 'border-box',
@@ -303,12 +307,12 @@ export default function TimeGridView({
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      backdropFilter: 'blur(8px)',
-                      boxShadow: '0 4px 14px rgba(34, 197, 94, 0.35)',
+                      backdropFilter: 'blur(12px)',
+                      boxShadow: '0 4px 18px rgba(34, 197, 94, 0.35)',
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', opacity: 0.95 }}>
+                      <div style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', color: '#86efac' }}>
                         👤 {b.client_name}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', marginTop: '1px' }}>
@@ -327,7 +331,7 @@ export default function TimeGridView({
                       style={{
                         alignSelf: 'flex-end',
                         border: 'none',
-                        backgroundColor: 'rgba(0,0,0,0.25)',
+                        backgroundColor: 'rgba(0,0,0,0.3)',
                         color: 'white',
                         borderRadius: '6px',
                         padding: '2px 6px',

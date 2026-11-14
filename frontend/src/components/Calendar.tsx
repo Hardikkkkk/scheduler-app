@@ -124,7 +124,6 @@ export default function Calendar() {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const currentMonth = new Date(weekDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  // Statistics
   const totalSlotsCount = days.reduce((acc, d) => acc + d.slots.length, 0);
   const totalBookingsCount = days.reduce((acc, d) => acc + (d.bookings?.length || 0), 0);
   const totalHours = days.reduce((acc, d) => {
@@ -138,10 +137,10 @@ export default function Calendar() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }}>
-      {/* Ambient React Bits Glass Background */}
+      {/* Ambient React Bits Aurora Background */}
       <GlassBackground />
 
-      {/* Top Header */}
+      {/* Top Frosted Glass Header */}
       <Header
         currentView={currentView}
         onViewChange={setCurrentView}
@@ -205,14 +204,14 @@ export default function Calendar() {
                     style={{
                       fontSize: '26px',
                       fontWeight: '800',
-                      color: '#0f172a',
+                      color: '#f8fafc',
                       margin: '0 0 4px 0',
                       letterSpacing: '-0.03em',
                     }}
                   >
                     Host Dashboard
                   </h1>
-                  <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '500' }}>
+                  <div style={{ fontSize: '14px', color: '#94a3b8', fontWeight: '500' }}>
                     Weekly Schedule &bull; {currentMonth} ({timezone.split('/')[1]?.replace('_', ' ') || timezone})
                   </div>
                 </div>
@@ -228,10 +227,10 @@ export default function Calendar() {
                       flexDirection: 'column',
                     }}
                   >
-                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>
                       Available Windows
                     </span>
-                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
+                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#f8fafc' }}>
                       {totalSlotsCount} slots ({totalHours.toFixed(1)}h)
                     </span>
                   </motion.div>
@@ -243,13 +242,13 @@ export default function Calendar() {
                       padding: '12px 20px',
                       display: 'flex',
                       flexDirection: 'column',
-                      border: '1px solid rgba(134, 239, 172, 0.7)',
+                      border: '1px solid rgba(134, 239, 172, 0.4)',
                     }}
                   >
-                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#4ade80', textTransform: 'uppercase' }}>
                       Client Bookings
                     </span>
-                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#15803d' }}>
+                    <span style={{ fontSize: '18px', fontWeight: '800', color: '#22c55e' }}>
                       {totalBookingsCount} sessions
                     </span>
                   </motion.div>
@@ -273,10 +272,9 @@ export default function Calendar() {
                         fontSize: '12px',
                         fontWeight: '700',
                         cursor: 'pointer',
-                        color: hostDisplayMode === 'grid' ? '#4f46e5' : '#64748b',
+                        color: hostDisplayMode === 'grid' ? '#ffffff' : '#94a3b8',
                         backgroundColor: 'transparent',
                         zIndex: 2,
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                       }}
                     >
                       {hostDisplayMode === 'grid' && (
@@ -285,9 +283,11 @@ export default function Calendar() {
                           style={{
                             position: 'absolute',
                             inset: 0,
-                            backgroundColor: 'white',
+                            backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            backdropFilter: 'blur(10px)',
                             borderRadius: '10px',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                             zIndex: -1,
                           }}
                           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -305,10 +305,9 @@ export default function Calendar() {
                         fontSize: '12px',
                         fontWeight: '700',
                         cursor: 'pointer',
-                        color: hostDisplayMode === 'list' ? '#4f46e5' : '#64748b',
+                        color: hostDisplayMode === 'list' ? '#ffffff' : '#94a3b8',
                         backgroundColor: 'transparent',
                         zIndex: 2,
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                       }}
                     >
                       {hostDisplayMode === 'list' && (
@@ -317,9 +316,11 @@ export default function Calendar() {
                           style={{
                             position: 'absolute',
                             inset: 0,
-                            backgroundColor: 'white',
+                            backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            backdropFilter: 'blur(10px)',
                             borderRadius: '10px',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                             zIndex: -1,
                           }}
                           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -331,10 +332,10 @@ export default function Calendar() {
                 </div>
               </div>
 
-              {/* AI Command Bar */}
+              {/* AI Natural Language Command Bar */}
               <AiCommandBar onSuccess={loadSlots} />
 
-              {/* Calendar Navigation */}
+              {/* Transparent Glass Calendar Navigation */}
               <div
                 className="glass-panel"
                 style={{
@@ -355,15 +356,14 @@ export default function Calendar() {
                     fontSize: '13px',
                     cursor: loading ? 'not-allowed' : 'pointer',
                     fontWeight: '700',
-                    color: '#334155',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: '#e2e8f0',
                   }}
                 >
                   ‹ Previous Week
                 </motion.button>
 
                 <div style={{ textAlign: 'center' }}>
-                  <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '800', color: '#f8fafc' }}>
                     {calendar?.weekStart} &bull; {calendar?.weekEnd}
                   </span>
                 </div>
@@ -379,8 +379,7 @@ export default function Calendar() {
                     fontSize: '13px',
                     cursor: loading ? 'not-allowed' : 'pointer',
                     fontWeight: '700',
-                    color: '#334155',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: '#e2e8f0',
                   }}
                 >
                   Next Week ›
@@ -394,8 +393,8 @@ export default function Calendar() {
                     style={{
                       width: '40px',
                       height: '40px',
-                      border: '3px solid rgba(226, 232, 240, 0.6)',
-                      borderTopColor: '#4f46e5',
+                      border: '3px solid rgba(255, 255, 255, 0.15)',
+                      borderTopColor: '#818cf8',
                       borderRadius: '50%',
                       animation: 'spin 1s linear infinite',
                     }}
@@ -409,9 +408,9 @@ export default function Calendar() {
                   className="glass-panel"
                   style={{
                     padding: '18px 24px',
-                    backgroundColor: 'rgba(254, 242, 242, 0.85)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
                     borderLeft: '4px solid #ef4444',
-                    color: '#b91c1c',
+                    color: '#fca5a5',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -421,7 +420,7 @@ export default function Calendar() {
                 >
                   <div>
                     <span style={{ fontWeight: '700' }}>{error}</span>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#991b1b' }}>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#f87171' }}>
                       Note: If database is disconnected, update your connection string in Render.
                     </p>
                   </div>
@@ -437,7 +436,6 @@ export default function Calendar() {
                       borderRadius: '10px',
                       cursor: 'pointer',
                       fontWeight: '700',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}
                   >
                     Retry
@@ -456,7 +454,7 @@ export default function Calendar() {
                 />
               )}
 
-              {/* Card List View */}
+              {/* Transparent Glass Card List View */}
               {!loading && hostDisplayMode === 'list' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {days.map((day) => {
@@ -478,14 +476,14 @@ export default function Calendar() {
                             gap: '12px',
                             marginBottom: '16px',
                             paddingBottom: '12px',
-                            borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                           }}
                         >
                           <div
                             style={{
                               fontSize: '17px',
                               fontWeight: '800',
-                              color: isToday ? '#4f46e5' : '#0f172a',
+                              color: isToday ? '#a5b4fc' : '#f8fafc',
                               minWidth: '120px',
                             }}
                           >
@@ -496,8 +494,9 @@ export default function Calendar() {
                               style={{
                                 fontSize: '11px',
                                 fontWeight: '800',
-                                color: '#4f46e5',
-                                backgroundColor: 'rgba(238, 242, 255, 0.8)',
+                                color: '#c7d2fe',
+                                backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                                border: '1px solid rgba(165, 180, 252, 0.3)',
                                 padding: '3px 8px',
                                 borderRadius: '8px',
                                 textTransform: 'uppercase',
@@ -506,7 +505,7 @@ export default function Calendar() {
                               Today
                             </span>
                           )}
-                          <span style={{ fontSize: '13px', color: '#64748b', marginLeft: 'auto', fontWeight: '500' }}>
+                          <span style={{ fontSize: '13px', color: '#94a3b8', marginLeft: 'auto', fontWeight: '500' }}>
                             {day.slots.length} recurring slots &bull; {day.bookings?.length || 0} booked
                           </span>
                         </div>
@@ -518,13 +517,13 @@ export default function Calendar() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '12px',
-                                backgroundColor: 'rgba(248, 250, 252, 0.6)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.03)',
                                 padding: '16px 20px',
                                 borderRadius: '14px',
-                                border: '1px dashed #cbd5e1',
+                                border: '1px dashed rgba(255, 255, 255, 0.15)',
                               }}
                             >
-                              <div style={{ fontSize: '14px', color: '#94a3b8', fontWeight: '500' }}>
+                              <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '500' }}>
                                 No availability slots set for this day
                               </div>
                               <motion.button
@@ -539,7 +538,6 @@ export default function Calendar() {
                                   fontSize: '13px',
                                   fontWeight: '700',
                                   cursor: 'pointer',
-                                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                                 }}
                               >
                                 + Add Slot
@@ -558,9 +556,9 @@ export default function Calendar() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '12px',
-                                    backgroundColor: 'rgba(254, 252, 232, 0.9)',
+                                    backgroundColor: 'rgba(234, 179, 8, 0.1)',
                                     padding: '16px 20px',
-                                    border: '1px solid #eab308',
+                                    border: '1px solid rgba(234, 179, 8, 0.4)',
                                   }}
                                 >
                                   <div style={{ display: 'flex', gap: '8px', flex: 1, alignItems: 'center' }}>
@@ -568,30 +566,16 @@ export default function Calendar() {
                                       type="time"
                                       value={editStartTime}
                                       onChange={(e) => setEditStartTime(e.target.value)}
-                                      style={{
-                                        border: '1px solid #d1d5db',
-                                        padding: '8px 12px',
-                                        borderRadius: '10px',
-                                        fontSize: '14px',
-                                        outline: 'none',
-                                        backgroundColor: 'white',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                      }}
+                                      className="glass-input"
+                                      style={{ padding: '8px 12px', fontSize: '14px' }}
                                     />
-                                    <span style={{ color: '#64748b' }}>to</span>
+                                    <span style={{ color: '#94a3b8' }}>to</span>
                                     <input
                                       type="time"
                                       value={editEndTime}
                                       onChange={(e) => setEditEndTime(e.target.value)}
-                                      style={{
-                                        border: '1px solid #d1d5db',
-                                        padding: '8px 12px',
-                                        borderRadius: '10px',
-                                        fontSize: '14px',
-                                        outline: 'none',
-                                        backgroundColor: 'white',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                      }}
+                                      className="glass-input"
+                                      style={{ padding: '8px 12px', fontSize: '14px' }}
                                     />
                                   </div>
                                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -606,7 +590,6 @@ export default function Calendar() {
                                         fontSize: '13px',
                                         fontWeight: '700',
                                         cursor: 'pointer',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                                       }}
                                     >
                                       Save
@@ -614,15 +597,14 @@ export default function Calendar() {
                                     <button
                                       onClick={cancelEdit}
                                       style={{
-                                        background: '#6b7280',
-                                        color: 'white',
-                                        border: 'none',
+                                        background: 'rgba(255, 255, 255, 0.12)',
+                                        color: '#cbd5e1',
+                                        border: '1px solid rgba(255, 255, 255, 0.2)',
                                         borderRadius: '10px',
                                         padding: '8px 16px',
                                         fontSize: '13px',
                                         fontWeight: '700',
                                         cursor: 'pointer',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                                       }}
                                     >
                                       Cancel
@@ -638,9 +620,11 @@ export default function Calendar() {
                                     gap: '12px',
                                     padding: '16px 20px',
                                     backgroundColor: slot.exception
-                                      ? 'rgba(254, 252, 232, 0.9)'
-                                      : 'rgba(255, 255, 255, 0.85)',
-                                    border: slot.exception ? '1px solid #fde047' : '1px solid rgba(226, 232, 240, 0.8)',
+                                      ? 'rgba(234, 179, 8, 0.08)'
+                                      : 'rgba(255, 255, 255, 0.05)',
+                                    border: slot.exception
+                                      ? '1px solid rgba(234, 179, 8, 0.35)'
+                                      : '1px solid rgba(255, 255, 255, 0.1)',
                                   }}
                                 >
                                   <span style={{ fontSize: '18px' }}>⏰</span>
@@ -648,7 +632,7 @@ export default function Calendar() {
                                     <span
                                       style={{
                                         fontSize: '15px',
-                                        color: '#0f172a',
+                                        color: '#f8fafc',
                                         fontWeight: '800',
                                       }}
                                     >
@@ -660,8 +644,9 @@ export default function Calendar() {
                                           marginLeft: '10px',
                                           fontSize: '11px',
                                           fontWeight: '800',
-                                          color: '#854d0e',
-                                          backgroundColor: '#fef08a',
+                                          color: '#fde047',
+                                          backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                                          border: '1px solid rgba(234, 179, 8, 0.3)',
                                           padding: '2px 8px',
                                           borderRadius: '10px',
                                         }}
@@ -689,8 +674,7 @@ export default function Calendar() {
                                         cursor: 'pointer',
                                         fontSize: '13px',
                                         fontWeight: '700',
-                                        color: '#475569',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                        color: '#e2e8f0',
                                       }}
                                     >
                                       ✏️ Edit
@@ -705,9 +689,8 @@ export default function Calendar() {
                                         cursor: 'pointer',
                                         fontSize: '13px',
                                         fontWeight: '700',
-                                        color: '#dc2626',
-                                        border: '1px solid #fee2e2',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                        color: '#f87171',
+                                        border: '1px solid rgba(239, 68, 68, 0.3)',
                                       }}
                                     >
                                       🗑️ Delete
@@ -721,7 +704,7 @@ export default function Calendar() {
                           {/* Confirmed Bookings Section */}
                           {day.bookings && day.bookings.length > 0 && (
                             <div style={{ marginTop: '8px' }}>
-                              <span style={{ fontSize: '11px', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>
+                              <span style={{ fontSize: '11px', fontWeight: '800', color: '#4ade80', textTransform: 'uppercase' }}>
                                 Confirmed Appointments
                               </span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
@@ -729,8 +712,8 @@ export default function Calendar() {
                                   <div
                                     key={b.id}
                                     style={{
-                                      backgroundColor: 'rgba(240, 253, 244, 0.85)',
-                                      border: '1px solid #bbf7d0',
+                                      backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                      border: '1px solid rgba(34, 197, 94, 0.3)',
                                       padding: '12px 18px',
                                       borderRadius: '12px',
                                       display: 'flex',
@@ -741,32 +724,31 @@ export default function Calendar() {
                                   >
                                     <div>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#166534' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#4ade80' }}>
                                           {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
                                         </span>
-                                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#0f172a' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#f8fafc' }}>
                                           {b.client_name}
                                         </span>
-                                        <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>
                                           ({b.client_email})
                                         </span>
                                       </div>
-                                      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '2px', fontWeight: '500' }}>
+                                      <div style={{ fontSize: '12px', color: '#86efac', marginTop: '2px', fontWeight: '500' }}>
                                         📌 {b.meeting_title} {b.notes ? `• "${b.notes}"` : ''}
                                       </div>
                                     </div>
                                     <button
                                       onClick={() => handleCancelBooking(b.id)}
                                       style={{
-                                        background: 'white',
-                                        border: '1px solid #fca5a5',
-                                        color: '#dc2626',
+                                        background: 'rgba(239, 68, 68, 0.15)',
+                                        border: '1px solid rgba(239, 68, 68, 0.35)',
+                                        color: '#f87171',
                                         padding: '4px 10px',
                                         borderRadius: '8px',
                                         fontSize: '12px',
                                         fontWeight: '700',
                                         cursor: 'pointer',
-                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                                       }}
                                     >
                                       Cancel
@@ -781,10 +763,10 @@ export default function Calendar() {
                           {addingForDay === dayOfWeek && (
                             <div
                               style={{
-                                backgroundColor: 'rgba(240, 253, 244, 0.9)',
+                                backgroundColor: 'rgba(99, 102, 241, 0.08)',
                                 padding: '20px 24px',
-                                borderRadius: '14px',
-                                border: '1px solid #16a34a',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(99, 102, 241, 0.3)',
                                 marginTop: '8px',
                               }}
                             >
@@ -806,10 +788,9 @@ export default function Calendar() {
                                 padding: '8px 16px',
                                 fontSize: '13px',
                                 fontWeight: '700',
-                                color: '#4f46e5',
+                                color: '#a5b4fc',
                                 cursor: 'pointer',
                                 marginTop: '4px',
-                                fontFamily: "'Plus Jakarta Sans', sans-serif",
                               }}
                             >
                               + Add 2nd Slot for {dayName}
@@ -835,8 +816,8 @@ export default function Calendar() {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      backgroundColor: 'rgba(12, 15, 29, 0.5)',
-                      backdropFilter: 'blur(8px)',
+                      backgroundColor: 'rgba(9, 13, 22, 0.65)',
+                      backdropFilter: 'blur(16px)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -850,12 +831,13 @@ export default function Calendar() {
                       exit={{ scale: 0.9, opacity: 0, y: 20 }}
                       className="glass-panel"
                       style={{
-                        padding: '28px',
-                        maxWidth: '480px',
+                        padding: '32px',
+                        maxWidth: '500px',
                         width: '100%',
+                        backgroundColor: 'rgba(15, 23, 42, 0.75)',
                       }}
                     >
-                      <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
+                      <h3 style={{ margin: '0 0 16px 0', fontSize: '19px', fontWeight: '800', color: '#f8fafc' }}>
                         Add Availability Window for {dayNames[addingForDay]}
                       </h3>
                       <SlotForm
